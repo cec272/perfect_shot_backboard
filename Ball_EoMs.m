@@ -30,6 +30,6 @@ M = simplify(jacobian(eqns,[x_acc,y_acc,z_acc]));
 b = simplify(M*[x_acc;y_acc;z_acc] - eqns);
 
 %% Package mass and force vectors
-matlabFunction(M,'File','A');
-matlabFunction(b,'File','b');
+matlabFunction(M,'File','A_ball');
+matlabFunction(b,'File','b_ball');
 

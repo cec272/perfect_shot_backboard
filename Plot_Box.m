@@ -49,8 +49,10 @@ function Plot_Box(G,front,up,width,height,thickness,figure_number)
     plot3(pointF(1),pointF(2),pointF(3),'r.','MarkerSize',20)
     plot3(pointG(1),pointG(2),pointG(3),'r.','MarkerSize',20)
     plot3(pointH(1),pointH(2),pointH(3),'r.','MarkerSize',20)
+    plot3(G(1),G(2),G(3),'k.','MarkerSize',20)
     %% These commands make viewing the hoop easier.
     set(gca, 'CameraPosition', [10 10 10]);
     view([60,30])
     xlim([-1,1]);ylim([-1,1]);zlim([5,15]);
+    xlabel('X');ylabel('Y');zlabel('Z');
 end
