@@ -18,7 +18,7 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 framesToPlot = 8
  
 # Load a cascade file for detecting faces
-face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml");
+face_cascade = cv2.CascadeClassifier("bball_cascade.xml");
 
 # keep track of bounding box locations in a dictionary
 face_dict = {'location': [], 'time': [], 'velocity': [[0, 0]]}
