@@ -3,6 +3,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
 import numpy as np
+import imutils
 import time
 
 # create a timer
@@ -17,8 +18,9 @@ camera.framerate = 30
 rawCapture = PiRGBArray(camera, size=(640, 480))
 framesToPlot = 8
  
-# Load a cascade file for detecting faces
-face_cascade = cv2.CascadeClassifier("bball_cascade.xml");
+# define the lower and upper boundaries of the ball in the HSV color space
+orangeLower = (151, 97, 18)
+orangeUpper = (190, 207, 199)
 
 # keep track of bounding box locations in a dictionary
 face_dict = {'location': [], 'time': [], 'velocity': [[0, 0]]}
@@ -28,28 +30,44 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	### *** RECOGNIZE AND RECORD LOCATION OF OBJECT *** ###
 	# grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
-	image = frame.array	
-	# Convert to grayscale
-	gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-	# Look for faces in the image using the loaded cascade file
-	faces = face_cascade.detectMultiScale(gray, 1.1, 5)
-	# Draw a rectangle around every found face
-	faceDetected = False
-	for (x,y,w,h) in faces:
-		faceDetected = True
-		# Create rectangle around the face
-		cv2.rectangle(image,(x,y),(x+w,y+h),(255,255,0),2)
-		# Save this in the dictionary
-		cx = x + w/2
-		cy = y + h/2
-		face_dict['location'].append([x, y, w, h, cx, cy])
-		face_dict['time'].append(time.time())
+	image = frame.array
+	# Resize the frame, blur it, and convert to HSV color space
+	blurred = cv2.GaussianBlur(image, (11, 11), 0)
+	hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+	# Construct a mask for the color "orange", then perform a series of
+	# dilations and erosions to remove any small blobs left in the mask
+	mask = cv2.inRange(hsv, orangeLower, orangeUpper)
+	mask = cv2.erode(mask, None, iterations=2)
+	mask = cv2.dilate(mask, None, iterations=2)
+	# Find contours in the mask and initialize the current (x,y) center
+	# of the ball
+	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+	cnts = imutils.grab_contours(cnts)
+	center = None
+	# Only proceed if at least one contour was found
+	if len(cnts) > 0:
+		# Find the largest contour in the mask, then use it to compute
+		# the minimum enclosing circle and centroid
+		c = max(cnts, key=cv2.contourArea)
+		((x, y), radius) = cv2.minEnclosingCircle(c)
+		M = cv2.moments(c)
+		center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+		# Only proceed if the radius meets a minimum size
+		ballDetected = False
+		if radius > 10:
+			# draw the circle and centroid on the frame, then update the
+			# list of tracked points
+			ballDetected = True
+			cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2)
+			cv2.circle(image, center, 5, (0, 0, 255), -1)
+			face_dict['location'].append([x, y, radius])
+			face_dict['time'].append(time.time())
 	# Connect last __ frames with a blue line
 	if len(face_dict['location']) >= framesToPlot:
 		center_pts = np.zeros((framesToPlot, 2), np.int32)
 		for i in range(framesToPlot):
-			center_pts[i][0] = face_dict['location'][len(face_dict['location'])-i-1][4]
-			center_pts[i][1] = face_dict['location'][len(face_dict['location'])-i-1][5]
+			center_pts[i][0] = face_dict['location'][len(face_dict['location'])-i-1][0]
+			center_pts[i][1] = face_dict['location'][len(face_dict['location'])-i-1][1]
 		center_pts = center_pts.reshape((-1,1,2))
 		cv2.polylines(image,[center_pts],False,(255,0,0),5)
 	# Show the frame
@@ -60,10 +78,10 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	rawCapture.truncate(0)
 	
 	### *** GET VELOCITY *** ###
-	if len(face_dict['location']) > 1 and faceDetected:
-		[x, y] = [face_dict['location'][-1][4], face_dict['location'][-1][5]]
+	if len(face_dict['location']) > 1 and ballDetected:
+		[x, y] = [face_dict['location'][-1][0], face_dict['location'][-1][1]]
 		t = face_dict['time'][-1]
-		[x0, y0] = [face_dict['location'][-2][4], face_dict['location'][-2][5]]
+		[x0, y0] = [face_dict['location'][-2][0], face_dict['location'][-2][1]]
 		t0 = face_dict['time'][-2]
 		v_x = (x-x0)/(t-t0)
 		v_y = (y-y0)/(t-t0)
