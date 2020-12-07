@@ -32,7 +32,7 @@ fprintf('Starting calculation\n')
 syms I1 I2 I3 m g real % Moment of inertia and mass of backboard, gravity
 syms T1 T2 T3 real % Input torques
 syms Gx Gy beta1 alpha1 lam1 lam2 lam3 mu1 mu2 mu3 real % Positions on backboard (see above)
-syms r1 r2 eta real % radius of 1st and 2nd gears, efficiency between gears
+syms r1 r2 r3 eta real % radius of 1st and 2nd gears, efficiency between gears
 %% Rotation and position of backboard
 
 syms theta phi psi real % rotation about Z, Y, X
@@ -101,9 +101,9 @@ rP3 = rG + R*(rP30-rG0);
 rB  = rG + R*(rB0-rG0);
 %% Motor Stuff
 % Calculate Thetas
-th2_1 = -(th1_1-th1_10) * r1/r2;
-th2_2 = -(th1_2-th1_20) * r1/r2;
-th2_3 = -(th1_3-th1_30) * r1/r2;
+th2_1 = -(th1_1-th1_10) * r1/r2/r3;
+th2_2 = -(th1_2-th1_20) * r1/r2/r3;
+th2_3 = -(th1_3-th1_30) * r1/r2/r3;
 
 % Rotation about an arbitrary axis
 motor_rod1 = dot(motor_rod10,motor_up1)*motor_up1+cos(th2_1)*motor_rod10+sin(th2_1)*cross(motor_up1,motor_rod10);
