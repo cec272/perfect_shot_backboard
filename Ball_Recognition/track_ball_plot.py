@@ -5,6 +5,9 @@ import cv2
 import numpy as np
 import imutils
 import time
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib import style
 
 # parameters
 r_ball = 139.7 # radius of ball (mm)
@@ -111,9 +114,5 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	current_time = time.time()
 	if current_time-start_time > time_out:
 		break
-
-# Print for debugging
-for key, value in ball_dict.items():
-	print(key, '->', value)
 
 cv2.destroyAllWindows()
