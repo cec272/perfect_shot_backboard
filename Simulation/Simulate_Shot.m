@@ -19,12 +19,13 @@ X_of_backboard = 0;
 Y_of_backboard = 0;
 Z_of_backboard = 10;
 Z_dif_of_hoop  = -1.2;
+Y_dif_of_hoop  = 0;
 X_dif_of_hoop  = 0.4;
 r_of_hoop      = 0.25;
 
 %%
 backboard = [X_of_backboard;Y_of_backboard;Z_of_backboard];
-center_hoop = backboard + [X_dif_of_hoop;0;Z_dif_of_hoop];
+center_hoop = backboard + [X_dif_of_hoop;Y_dif_of_hoop;Z_dif_of_hoop];
 %% Sizes
 r_of_ball      = 0.125;
 W_of_backboard = 0.75;
