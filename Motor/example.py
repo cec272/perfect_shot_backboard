@@ -6,7 +6,7 @@ import board
 import digitalio
 from adafruit_motor import stepper
 
-DELAY = 0.01
+DELAY = 0.005
 STEPS = 200
 
 # You can use any available GPIO pin on both a microcontroller and a Raspberry Pi.
@@ -29,25 +29,31 @@ motor = stepper.StepperMotor(coils[0], coils[1], coils[2], coils[3], microsteps=
 for step in range(STEPS):
     motor.onestep()
     time.sleep(DELAY)
+    print(1)
 
 for step in range(STEPS):
     motor.onestep(direction=stepper.BACKWARD)
     time.sleep(DELAY)
+    print(2)
 
 for step in range(STEPS):
     motor.onestep(style=stepper.DOUBLE)
     time.sleep(DELAY)
+    print(3)
 
 for step in range(STEPS):
     motor.onestep(direction=stepper.BACKWARD, style=stepper.DOUBLE)
     time.sleep(DELAY)
+    print(4)
 
 for step in range(STEPS):
     motor.onestep(style=stepper.INTERLEAVE)
     time.sleep(DELAY)
+    print(5)
 
 for step in range(STEPS):
     motor.onestep(direction=stepper.BACKWARD, style=stepper.INTERLEAVE)
     time.sleep(DELAY)
+    print(6)
 
 motor.release()
