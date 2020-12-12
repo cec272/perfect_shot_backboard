@@ -54,11 +54,11 @@ plt.legend(loc = 'upper left')
 plot_ax = False
 plot_ay = False
 plot_az = False
-plot_pitch_accel = True
-plot_roll_accel = True
-plot_pitch_gyro = True
-plot_roll_gyro = True
-plot_yaw_gyro = True
+plot_pitch_accel = False
+plot_roll_accel = False
+plot_pitch_gyro = False
+plot_roll_gyro = False
+plot_yaw_gyro = False
 plot_pitch_filt = True
 plot_roll_filt = True
 if not plot_ax:
