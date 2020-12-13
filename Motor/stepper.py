@@ -21,10 +21,10 @@ coils = (
     digitalio.DigitalInOut(board.D20),  # B1
     digitalio.DigitalInOut(board.D21),  # B2
     # motor 3
-    digitalio.DigitalInOut(board.D19),  # A1
-    digitalio.DigitalInOut(board.D26),  # A2
-    digitalio.DigitalInOut(board.D20),  # B1
-    digitalio.DigitalInOut(board.D21),  # B2
+    digitalio.DigitalInOut(board.D27),  # A1
+    digitalio.DigitalInOut(board.D17),  # A2
+    digitalio.DigitalInOut(board.D22),  # B1
+    digitalio.DigitalInOut(board.D23),  # B2
 )
 
 for coil in coils:
@@ -48,4 +48,4 @@ def moveStepper(motor, steps, direc):
                 motor[m].onestep(direction=direc[m], style=stepper.DOUBLE)
         time.sleep(DELAY) # pause for motors to complete step
 
-moveStepper([motor1, motor2],[200, 400],[stepper.FORWARD, stepper.FORWARD])
+moveStepper([motor1, motor2, motor3],[200, 400, 600],[stepper.FORWARD, stepper.FORWARD, stepper.FORWARD])
