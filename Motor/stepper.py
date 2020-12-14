@@ -47,5 +47,3 @@ def moveStepper(motor, steps, direc):
             if s <= steps[m]: # check if step number is valid
                 motor[m].onestep(direction=direc[m], style=stepper.DOUBLE)
         time.sleep(DELAY) # pause for motors to complete step
-
-moveStepper([motor1, motor2, motor3],[200, 400, 600],[stepper.FORWARD, stepper.FORWARD, stepper.FORWARD])

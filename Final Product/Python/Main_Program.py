@@ -6,6 +6,8 @@
 
 ## Import modules
 import time
+import board
+import digitalio
 import RPi.GPIO
 import pygame
 from pygame.locals import *
@@ -18,7 +20,8 @@ from system_iterator import *
 import weights
 from scipy.stats.distributions import chi2
 import csv
-import covariance_small_enough import *
+from covariance_small_enough import *
+from motor_control import moveStepper
 
 ## Start other scripts
 os.system('sudo python3 camera_transmiter.py &')
@@ -33,7 +36,7 @@ state        = 0
 motor_1_reset= False
 motor_2_reset= False
 motor_3_reset= False
-ball_radius = ########
+ball_radius = 0.1397
 min_covariances=[ball_radius/4,ball_radius/4,ball_radius/4,.076,.076,.076]
 
 lam0 = chi2.ppf(0.95,0)
@@ -54,18 +57,36 @@ interface_states = 'interface_states.csv'
 imu = 'image3.csv' #### make these for imus
 time_imu  = 'time3.csv'
 
-# GPIO Pins
-MOTOR_11 = 
-MOTOR_12 = 
-MOTOR_21 = 
-MOTOR_22 = 
-MOTOR_31 = 
-MOTOR_32 = 
+# Motor GPIO pins and coils
+coils = (
+    # motor 1
+    digitalio.DigitalInOut(board.D19),  # A1
+    digitalio.DigitalInOut(board.D26),  # A2
+    digitalio.DigitalInOut(board.D6),   # B1
+    digitalio.DigitalInOut(board.D13),  # B2
+    # motor 2
+    digitalio.DigitalInOut(board.D12),  # A1
+    digitalio.DigitalInOut(board.D16),  # A2
+    digitalio.DigitalInOut(board.D20),  # B1
+    digitalio.DigitalInOut(board.D21),  # B2
+    # motor 3
+    digitalio.DigitalInOut(board.D27),  # A1
+    digitalio.DigitalInOut(board.D17),  # A2
+    digitalio.DigitalInOut(board.D22),  # B1
+    digitalio.DigitalInOut(board.D23),  # B2
+)
 
-# Limit switch pins
-LS_1 = 
-LS_2 = 
-LS_3 = 
+for coil in coils:
+    coil.direction = digitalio.Direction.OUTPUT
+    
+motor1 = stepper.StepperMotor(coils[0], coils[1], coils[2], coils[3], microsteps=None)
+motor2 = stepper.StepperMotor(coils[4], coils[5], coils[6], coils[7], microsteps=None)
+motor3 = stepper.StepperMotor(coils[8], coils[9], coils[10], coils[11], microsteps=None)
+
+# Limit switch GPIO pins
+LS_1 = 5
+LS_2 = 14
+LS_3 = 15
 
 ## Pygame initialization
 pygame.init()
@@ -127,13 +148,21 @@ while (current_time-start_time) < run_time and run:
 # State 4: Pause until hit.
 
     if state == 0:
-        # Move motors back
+        # Check which limit switches have been reached
+        motors = []
+        direc = []
         if motor_1_reset == False:
-            #####Move motor 1 back one step ####
+            motors.append(motor1)
+            direc.append(stepper.BACKWARD)
         if motor_2_reset == False:
-            #####Move motor 2 back one step ####
+            motors.append(motor2)
+            direc.append(stepper.BACKWARD)
         if motor_3_reset == False:
-            #####Move motor 3 back one step ####
+            motors.append(motor3)
+            direc.append(stepper.BACKWARD)
+        # Move motors that haven't hit their limit
+        moveStepper(motors, [1]*len(motors), direc)
+        # Move onto next state once all motorrs have hit their limits
         if motor_1_reset and motor_2_reset and motor_3_reset:
             state = 1
     elif state == 1:
@@ -152,3 +181,4 @@ while (current_time-start_time) < run_time and run:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             run = row[0]
+            
