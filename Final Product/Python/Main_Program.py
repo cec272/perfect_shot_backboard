@@ -22,6 +22,7 @@ from scipy.stats.distributions import chi2
 import csv
 from covariance_small_enough import *
 from motor_control import moveStepper
+import camera_transmitter
 
 ## Start other scripts
 os.system('sudo python3 camera_transmiter.py &')
@@ -36,7 +37,7 @@ state        = 0
 motor_1_reset= False
 motor_2_reset= False
 motor_3_reset= False
-ball_radius = 0.1397
+ball_radius  = camera_transmitter.r_ball/1000
 min_covariances=[ball_radius/4,ball_radius/4,ball_radius/4,.076,.076,.076]
 
 lam0 = chi2.ppf(0.95,0)
@@ -156,10 +157,10 @@ while (current_time-start_time) < run_time and run:
             direc.append(stepper.BACKWARD)
         if motor_2_reset == False:
             motors.append(motor2)
-            direc.append(stepper.BACKWARD)
+            direc.append(stepper.FORWARD)
         if motor_3_reset == False:
             motors.append(motor3)
-            direc.append(stepper.BACKWARD)
+            direc.append(stepper.FORWARD)
         # Move motors that haven't hit their limit
         moveStepper(motors, [1]*len(motors), direc)
         # Move onto next state once all motorrs have hit their limits
@@ -175,8 +176,13 @@ while (current_time-start_time) < run_time and run:
     elif state == 3:
         # Use controller to find backboard movement
         # Move backboard
+        
+        state = 4
+        end_state_3_time = time.time()
     elif state == 4:
         # Do nothing until ball hits
+        if (time.time()-end_state_3_time) > 5:
+            state = 0
     with open('run.csv','r') as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:

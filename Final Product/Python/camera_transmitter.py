@@ -25,8 +25,8 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 framesToPlot = 8
 
 # define the lower and upper boundaries of the ball in the HSV color space
-orangeLower = (151, 97, 18)
-orangeUpper = (190, 207, 199)
+colorLower = (54, 46, 50)
+colorUpper = (105, 255, 255)
 
 # keep track of bounding box locations in a dictionary
 ball_dict = {'location': [], 'time': [], 'velocity': [[0, 0, 0]]}
@@ -42,7 +42,7 @@ time_image  = 'time_image.csv'
 
 run = True
 
-while run and ((current_time-start_time) < 30):
+while run:
     ############## GET IMAGE 1
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         ### *** RECOGNIZE AND RECORD LOCATION OF OBJECT *** ###
@@ -54,7 +54,7 @@ while run and ((current_time-start_time) < 30):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         # Construct a mask for the color "orange", then perform a series of
         # dilations and erosions to remove any small blobs left in the mask
-        mask = cv2.inRange(hsv, orangeLower, orangeUpper)
+        mask = cv2.inRange(hsv, colorLower, colorUpper)
         mask = cv2.erode(mask, None, iterations=2)
         mask = cv2.dilate(mask, None, iterations=2)
         # Find contours in the mask and initialize the current (x,y) center

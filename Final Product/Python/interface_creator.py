@@ -7,7 +7,18 @@ from pygame.locals import *
 import os
 from interface_variables import *
 import numpy as np
+import motor_control
+import board
+import digitalio
+from adafruit_motor import stepper
 
+# motor variables
+coils = motor_control.coils
+motor1 = motor_control.motor1
+motor2 = motor_control.motor2
+motor3 = motor_control.motor3
+
+# main loop
 while run and ((current_time-start_time) < end_time):
     with open('interface_states.csv','r') as csvfile:
         csvreader = csv.reader(csvfile)
@@ -38,8 +49,12 @@ while run and ((current_time-start_time) < end_time):
         if(event.type is MOUSEBUTTONUP):
             pos = pygame.mouse.get_pos()
             x,y=pos
-        if (y>size_y*4/5) and (y<size_y*9/10) and (x>size_x/10) and (x<size_x/2):
+        if (y>size_y*4/5) and (y<size_y*9/10) and (x>size_x/10) and (x<size_x/2): # stop button pressed
             run = False
+            motor1.release() # release all motors
+            motor2.release()
+            motor3.release()
+        
     ## Plotting
     screen.fill(black)
     pygame.draw.rect(screen,red,stop_bar)
