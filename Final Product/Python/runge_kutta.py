@@ -3,7 +3,8 @@
 # Runge-Kutta 4th order Integrator
 #
 
-def runge_kutta(del_t,t,x,ffun,p)
+def runge_kutta(del_t,t,x,ffun,p):
+    from ball_calc import *
     k1 = feval(ffun,t,x,p);
     k2 = feval(ffun,t+del_t/2,x+del_t*k1/2,p);
     k3 = feval(ffun,t+del_t/2,x+del_t*k2/2,p);

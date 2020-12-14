@@ -104,7 +104,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		#print(z_m*39.3701)
 		#print(x_m*0.03937)
 		#print(y_m*0.03937)
-		print(v_x)
+		#print(v_x)
 		ball_dict['velocity'].append([v_x, v_y, v_z])
 		
 	### *** TIME-OUT AFTER A CERTAIN TIME *** ###
