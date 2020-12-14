@@ -20,6 +20,11 @@ from scipy.stats.distributions import chi2
 import csv
 import covariance_small_enough import *
 
+## Start other scripts
+os.system('sudo python3 camera_transmiter.py &')
+os.system('sudo python3 imu_transmiter.py &')
+os.system('sudo python3 interface_creator.py &')
+
 ## Create constants
 current_time = time.time()
 start_time   = time.time()
@@ -36,19 +41,18 @@ N = 10 # Number of samples
 run = True
 n_sig = 3; # Number of sigma points
 
+
 with open('run.csv','w') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(run)
 
-# Image addresses
-image1 = 'image1.csv'
-time1  = 'time1.csv'
+# Addresses
+image = 'image.csv'
 
-image2 = 'image2.csv'
-time2  = 'time2.csv'
+interface_states = 'interface_states.csv'
 
-image3 = 'image3.csv'
-time3  = 'time3.csv'
+imu = 'image3.csv' #### make these for imus
+time_imu  = 'time3.csv'
 
 # GPIO Pins
 MOTOR_11 = 
@@ -90,67 +94,29 @@ GPIO.add_event_detect(LS_3,GPIO.RISING,callback=LIMIT_SWITCH_3,bouncetime=300)
 while (current_time-start_time) < run_time and run:
     ## Collect measurements
     # Collect image from csv
-    I1 = np.loadtxt(open(image1, "rb"), delimiter=",")
-    X_state_1 = I1[0:6]
-    t_1 = I1[6]
-    I2 = np.loadtxt(open(image2, "rb"), delimiter=",")
-    T2 = np.loadtxt(open(time2, "rb"), delimiter=",")
-    I3 = np.loadtxt(open(image3, "rb"), delimiter=",")
-    T3 = np.loadtxt(open(time3, "rb"), delimiter=",")
+    with open('run.csv','r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            camera_measurements[i,:] = row[:6]
+            t_camera[i] = row[6]
     # Collect imu data from csv
 
     ## Process measurements
+    for i in range(0,3):
+        measurement = camera_measurements[i,:]
+        eval('t_' + str(i) + '=t_camera[i]')
+        eval('x_hat,S_xk = SR_SPF_Ball(x_hat,S_xk,S_v0,S_n0,n_sig,weights,p,measurement,t_' str(i) '-t_last)')
+        eval('t_last = t' + str(i))
     for i in range(0,N):
-        SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,weights,p,measurement)
-        # Process imu data
-
+        #Process imu measurements
+    
+    # Send measurements to interface
+    with open(interface_states,'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(np.concatenate(x_hat,S_xk,state))
+        
     ## Check covariances
     if covariances_small_enough(S,min_covariances) and (state == 1):
-        state = 2
-
-    # Update interface
-    my_values_1={str(X):(mean_1,row_4),str(Y):(mean_1,row_5),str(Z):(mean_1,row_6),str(X_d):(mean_1,row_7),str(Y_d):(mean_1,row_8),str(Z_d):(mean_1,row_9),str(th1):(mean_2,row_4),str(th2):(mean_2,row_5),str(th3):(mean_2,row_6),str(theta):(mean_2,row_7),str(phi):(mean_2,row_8),str(psi):(mean_2,row_9)}
-    my_values_2={str(cov_x):(cov_1,row_4),str(cov_y):(cov_1,row_5),str(cov_z):(cov_1,row_6),str(cov_x_d):(cov_1,row_7),str(cov_y_d):(cov_1,row_8),str(cov_z_d):(cov_1,row_9),str(cov_th1):(cov_2,row_4),str(cov_th2):(cov_2,row_5),str(cov_th3):(cov_2,row_6),str(cov_theta):(cov_2,row_7),str(cov_phi):(cov_2,row_8),str(cov_psi):(cov_2,row_9)}
-    my_labels_large={'BALL':(size_x/3,row_2),'BACKBOARD':(size_x*17/24,row_2),'STOP':(size_x*3/10,row_10),'STATUS:':(size_x*4/6,row_10),str(state):(size_x*5/6,row_10)}
-    # Check for button press
-    for event in pygame.event.get():
-        if(event.type is MOUSEBUTTONUP):
-            pos = pygame.mouse.get_pos()
-            x,y=pos
-        if (y>size_y*4/5) and (y<size_y*9/10) and (x>size_x/10) and (x<size_x/2):
-            run = False
-    ## Plotting
-    screen.fill(black)
-    pygame.draw.rect(screen,red,stop_bar)
-    
-    # Labels_1
-    for my_text,text_pos in my_labels_1.items():
-        text_surface = my_font.render(my_text,True,white)
-        rect = text_surface.get_rect(center=text_pos)
-        screen.blit(text_surface,rect)
-    # Labels_2
-    for my_text,text_pos in my_labels_2.items():
-        text_surface = my_font.render(my_text,True,white)
-        rect = text_surface.get_rect(center=text_pos)
-        screen.blit(text_surface,rect)
-    # Values
-    for my_text,text_pos in my_values.items():
-        text_surface = my_font.render(my_text,True,white)
-        rect = text_surface.get_rect(center=text_pos)
-        screen.blit(text_surface,rect)
-    for my_text,text_pos in my_values_2.items():
-        text_surface = my_font.render(my_text,True,white)
-        rect = text_surface.get_rect(center=text_pos)
-        screen.blit(text_surface,rect)
-    # Labels_Large
-    for my_text,text_pos in my_labels_large.items():
-        text_surface = my_font.render(my_text,True,white)
-        rect = text_surface.get_rect(center=text_pos)
-        screen.blit(text_surface,rect)
-    pygame.display.flip()
-    
-    ## Update state of system
-    if covariance_small_enough and (state == 1):
         state = 2
 
 ## Process according to state
@@ -182,6 +148,7 @@ while (current_time-start_time) < run_time and run:
         # Move backboard
     elif state == 4:
         # Do nothing until ball hits
-    with open('run.csv','w') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(run)
+    with open('run.csv','r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            run = row[0]

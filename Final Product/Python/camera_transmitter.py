@@ -14,6 +14,8 @@ import imutils
 
 start_time = time.time()
 current_time = time.time()
+data = np.zeros(3,7)
+count = 1
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -35,14 +37,8 @@ f_lens = 3.04 # camera lens focal length (mm)
 h_sensor = 2.76 # camera sensor height (mm)
 
 # Image addresses
-image1 = 'image1.csv'
-time1  = 'time1.csv'
-
-image2 = 'image2.csv'
-time2  = 'time2.csv'
-
-image3 = 'image3.csv'
-time3  = 'time3.csv'
+image = 'image.csv'
+time_image  = 'time_image.csv'
 
 run = True
 
@@ -118,8 +114,16 @@ while run and ((current_time-start_time) < 30):
             v_z = (z0_m-z_m)/(t-t0) # (m/s)
             ball_dict['velocity'].append([v_x, v_y, v_z])
             break
-
-    with open(image1,'w') as csvfile:
+    
+    eval('data[:,' + str(count) + '] = [x_m,y_m,z_m,v_x,v_y,v_z,t]')
+    with open(image,'w') as csvfile:
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerows([x_m,y_m,z_m,v_x,v_y,v_z,t])
-    run = np.loadtxt(open(filename, "rb"))
+        csvwriter.writerows(data)
+    if count < 3:
+        count = count+1
+    else:
+        count = 0
+    with open('run.csv','r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            run = row[0]

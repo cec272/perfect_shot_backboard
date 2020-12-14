@@ -23,12 +23,14 @@ def does_it_go_through = path_tracker(h,x_ball_init,ffun,p,front,up,W_of_backboa
             does_it_go_through = 1;
             return
  
-def is_it = ball_in_hoop(ball_location,ball_radius,hoop_position)
-# Distance between points
-r_ball_hoop = hoop_position - ball_location;
-# Compare to radius
-if abs(norm(r_ball_hoop)-ball_radius) < 1.25*ball_radius
-    is_it = 1;
-else
-    is_it = 0;
- 
+def is_it = ball_in_hoop(ball_location,ball_radius,hoop_position):
+    # Distance between points
+    r_ball_hoop = hoop_position - ball_location;
+    # Compare to radius
+    if abs(norm(r_ball_hoop)-ball_radius) < 1.25*ball_radius
+        is_it = 1
+    else
+        is_it = 0
+
+def collison():
+    

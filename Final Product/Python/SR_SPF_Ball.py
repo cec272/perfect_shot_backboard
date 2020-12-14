@@ -4,7 +4,7 @@
 
 ### Done before: initialize
 
-def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,weights,p,measurement):
+def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,weights,p,measurement,dt):
   import numpy as np
   from ball_calc import * 
   import weights
@@ -18,8 +18,8 @@ def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,weights,p,measurement):
   X_p1(:,0)=ball_calc(0,sigma_points[:,0],p)
   x_p1=X_p1[:,0]*weights.wm0;
   for i in range(0,n_sig)
-    X_p1[:,i+1] = ball_calc(0,sigma_points[:,1+i],p);
-    X_p1[:,i+1+n_sig] = ball_calc(0,sigma_point[:,1+i+n_sig],p);
+    X_p1[:,i+1] = dt*ball_calc(0,sigma_points[:,1+i],p);
+    X_p1[:,i+1+n_sig] = dt*ball_calc(0,sigma_point[:,1+i+n_sig],p);
     x_p1 = weights.wm*(X_p1[:,i+1]+X_p1[:,i+1+n_sig])+x_p1;
 
   B_k=np.zeros(2*n_sig+1,nx);

@@ -2,24 +2,6 @@
 # ECE 5725 - Final Project
 # 
 
-#   Back |-----------------------------------|
-#        |                                   |
-# -------|----------------------.            |
-# Gy     |                      |G           |
-# |  ----|-------------.        |            |
-# |alpha1|             |B1      |            |
-# | | ---|----.        |        |            |   /\
-# | | mu1|    |P1      |        |            | y | 
-# | |  | |    |        |        |            |   |   x
-# -------|-----------------------------------|    --->
-#        |lam1|        |        |
-#        |-----beta1---|        |
-#        |--------Gx------------|
-#   Key:
-#       P = Attachment point from motors
-#       B = Constraint attachment
-#       G = Center of mass of backboard
-
 
 ## Positions on backboard
 # Number of points: 3
