@@ -167,9 +167,7 @@ while run:
 	if data_count < 2:
 		data_count = data_count+1
 	else:
-		data_count = 0
-	print(data)
-	
+		data_count = 0	
 	
 	### *** CHECK IF FUNCTION SHOULD QUIT *** ###
 	with open('run.csv','r') as csvfile:

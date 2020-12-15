@@ -8,27 +8,48 @@
 import time
 import board
 import digitalio
-import RPi.GPIO
+import RPi.GPIO as GPIO
 import pygame
 from pygame.locals import *
 import os
 import math
 import Geometric_Variables
-import Physcial_Variables as p
+import Physical_Variables as p
 from interface_variables import *
 from system_iterator import *
 import weights
-from scipy.stats.distributions import chi2
 import csv
-from covariance_small_enough import *
+from covariances_small_enough import *
 from motor_control import gearToStep
 from motor_control import moveStepper
-import camera_transmitter
+from adafruit_motor import stepper
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+import cv2
+import imutils
+import transformations
+import numpy as np
+
+## Addresses
+image_data = 'image.csv'
+
+interface_states = 'interface_states.csv'
+
+imu_data = 'imu.csv' #### make these for imus
+
+run_status = 'run.csv'
+
+## Output to this file about the run status
+run = True
+with open(run_status,'w') as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerow([run])
+
 
 ## Start other scripts
-os.system('sudo python3 camera_transmiter.py &')
-os.system('sudo python3 imu_transmiter.py &')
-os.system('sudo python3 interface_creator.py &')
+os.system('python3 camera_transmitter.py &')
+#os.system('python3 imu_transmitter.py &')
+os.system('python3 interface_creator.py &')
 
 ## Create constants
 current_time = time.time()
@@ -38,25 +59,12 @@ state        = 0
 motor_1_reset= False
 motor_2_reset= False
 motor_3_reset= False
-ball_radius  = camera_transmitter.r_ball/1000
+ball_radius  = 65.42 # CHANGE TO BALL LATER!!!!!!
 min_covariances=[ball_radius/4,ball_radius/4,ball_radius/4,.076,.076,.076]
 
-lam0 = chi2.ppf(0.95,0)
+lam0 = 3.8415 # chi2.ppf(0.95,0)
 N = 10 # Number of samples
-run = True
 n_sig = 3; # Number of sigma points
-
-
-with open('run.csv','w') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(run)
-
-# Addresses
-image_data = 'image.csv'
-
-interface_states = 'interface_states.csv'
-
-imu_data = 'imu.csv' #### make these for imus
 
 # Motor GPIO pins and coils
 coils = (
@@ -96,6 +104,10 @@ motorGearTeeth = 16
 leverGearTeeth = 36
 
 ## Interrupts
+GPIO.setmode(GPIO.BCM)  
+GPIO.setup(LS_1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(LS_2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(LS_3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 def LIMIT_SWITCH_1(channel):
     global motor_1_reset
     motor_1_reset = True
@@ -107,6 +119,7 @@ def LIMIT_SWITCH_2(channel):
 def LIMIT_SWITCH_3(channel):
     global motor_3_reset
     motor_3_reset = True
+
 
 GPIO.add_event_detect(LS_1,GPIO.RISING,callback=LIMIT_SWITCH_1,bouncetime=300)
 GPIO.add_event_detect(LS_2,GPIO.RISING,callback=LIMIT_SWITCH_2,bouncetime=300)
@@ -125,7 +138,7 @@ while (current_time-start_time) < run_time and run:
             camera_measurements[row_num,:] = row[:6]
             t_camera[row_num] = row[6]
             row_num = row_num + 1
-            
+    '''        
     # Collect imu data from csv
     imu_measurements = np.zeros((3, 4))
     t_imu = np.zeros((3,1))
@@ -136,10 +149,10 @@ while (current_time-start_time) < run_time and run:
             camera_measurements[row_num,:] = row[:6]
             t_camera[row_num] = row[6]
             row_num = row_num + 1
-    
+    '''
     ## Process measurements
     for i in range(0,3):
-        if (not camera_measurement[i,1] == None):
+        if (not camera_measurements[i,1] == None):
             measurement = camera_measurements[i,:]
             x_pos,S_xk_pos = SR_SPF_Ball(x_hat,S_xk,S_v0,S_n0,n_sig,measurement,t_camera[i]-t_last)
             P = np.matmul(S_xk_pos,np.transpose(S_xk_pos))
@@ -191,7 +204,7 @@ while (current_time-start_time) < run_time and run:
             does_it_work,theta_1,theta_2,theta_3 = find_angles(working_orientations[1,i],working_orientations[2,i],working_orientations[3,i],working_orientations[4,i])
             if does_it_work:
                 break
-        theta1_goal,theta2_goal,theta3_goal = orientation_selector(th_1_current,th_2_current,th_3_current,np.array([theta_1,theta_2,theta_3])
+        theta1_goal,theta2_goal,theta3_goal = orientation_selector(th_1_current,th_2_current,th_3_current,np.array([theta_1,theta_2,theta_3]))
         state = 3
     elif state == 3:
         # Use controller to find backboard movement
@@ -225,8 +238,10 @@ while (current_time-start_time) < run_time and run:
         # Do nothing until ball hits
         if (time.time()-end_state_3_time) > 5:
             state = 0
-    with open('run.csv','r') as csvfile:
+    with open(run_status,'r') as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             run = row[0]
             
+    # Print stuff diagnosing
+    print(state)
