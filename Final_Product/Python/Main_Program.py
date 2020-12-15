@@ -92,8 +92,8 @@ LS_2 = 14
 LS_3 = 15
 
 # Gear Specs
-motorGearTeeth = 18
-leverGearTeeth = 24
+motorGearTeeth = 16
+leverGearTeeth = 36
 
 ## Interrupts
 def LIMIT_SWITCH_1(channel):
@@ -192,7 +192,9 @@ while (current_time-start_time) < run_time and run:
         direc = []
         motorNumber = 1
         for angle in [theta1_goal, theta2_goal, theta3_goal]:
+            # find desired angle based on gearing
             des_step = gearToStep(leverGearTeeth, motorGearTeeth, angle, degPerStep)
+            # determine motor direction
             if motorNumber == 1:
                 if des_step < 0:
                     steps.append(abs(des_step))
