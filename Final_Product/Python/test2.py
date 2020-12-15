@@ -12,12 +12,12 @@ import runge_kutta
 import transformations
 import math
 import path_tracker
-import system_iterator
+from system_iterator import *
 import SR_SPF_Ball
 import find_angles
+import Geometric_Variables as GV
 
-h = 0.1
-x_ball_init = np.array([[1],[1],[1],[1],[1],[1]])
+h = 0.05
 ffun = 'ball_calc.ball_calc'
 front = np.transpose(np.array([1,0,0]))
 up = np.transpose(np.array([0,1,0]))
@@ -36,7 +36,7 @@ x_new = transformations.transform_baseboard_to_backboard(theta,phi,psi,x)
 
 n_sig = 3
 
-measurement = np.array([1,1,1,1,1,2])
+#measurement = np.array([1,1,1,1,np.random.rand*5,np.random.rand*-2])
 P_x = np.identity(6)*0.1+0.0001
 P_v = np.identity(6)*0.1+0.0001
 P_n = np.identity(6)*0.1+0.0001
@@ -45,12 +45,11 @@ S_x0 = np.linalg.cholesky(P_x)
 S_v0 = np.linalg.cholesky(P_v)
 S_n0 = np.linalg.cholesky(P_n)
 
-e_b = np.array([1,0,0])
-r_B0 = np.array([0,-0.1,0])
-r_GB0 = np.array([0,-1,0])
-#print(system_iterator.system_iterator(e_b,r_B0,r_GB0,h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop).shape)
+x_ball_init = np.array([0.229, 0.189, 0.329,0,0,0])
+
+print(system_iterator(GV.e_b,GV.r_B0,GV.rGB0,h,x_ball_init,GV.front,GV.up,GV.W_of_backboard,GV.H_of_backboard,GV.T_of_backboard,0.06542,GV.center_hoop))
 #print(path_tracker.path_tracker(h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop,backboard))
-print(SR_SPF_Ball.SR_SPF_Ball(x_ball_init,S_x0,S_v0,S_n0,n_sig,measurement,h))
+#print(SR_SPF_Ball.SR_SPF_Ball(x_ball_init,S_x0,S_v0,S_n0,n_sig,measurement,h))
 
 A = [1,2,3]
 B = [4,5,6]

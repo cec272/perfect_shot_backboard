@@ -9,44 +9,16 @@ def path_tracker(h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backb
     does_it_go_through = False
     t_new=0
     x_new=x_ball_init
-    collision_tracker=0
-    while (t_new < 1):
+    while (t_new < 2):
+        print(x_new)
         t_new,x_new = runge_kutta.runge_kutta(h,t_new,x_new);
-        if (collision_tracker < 1) and did_it_collide(backboard,x_new[0:3],front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball):
-            x_new[3:6] = collision(up,front,x_new[3:6],p.e);
-            collision_tracker=collision_tracker+1;
-        elif (collision_tracker < 5)and(collision_tracker>0):
-            collision_tracker=collision_tracker+1;
-        elif (collision_tracker > 5):
-            collision_tracker = 0;
-        if ball_in_hoop(x_new[0:3],r_of_ball,center_hoop):
-            does_it_go_through = True
-            return does_it_go_through
-    return does_it_go_through
- 
-def ball_in_hoop(ball_location,ball_radius,hoop_position):
-    import numpy as np
-    # Distance between points
-    r_ball_hoop = hoop_position - ball_location;
-    # Compare to radius
-    if abs(np.linalg.norm(r_ball_hoop)-ball_radius) < 1.25*ball_radius:
-        is_it = 1
-    else:
-        is_it = 0
-    return is_it
-
-def collision(up,front,velocity,restitution):
-    import numpy as np
-    # Calculate the left component of the backboard.
-    left = np.cross(front,up);
-    # Decompose velocity into backboard coordinates.
-    up_comp = np.dot(velocity,up)/np.dot(up,up)*up;
-    front_comp = np.dot(velocity,front)/np.dot(front,front)*front;
-    left_comp = np.dot(velocity,left)/np.dot(left,left)*left;
-    # Put velocity back together.
-    velocity_new = up_comp-front_comp*restitution+left_comp;
-    return velocity_new
-
+        location, does_it_collide = did_it_collide(backboard,x_new[0:3],front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball)
+        velocity_at_time = x_new[3:6]
+        if  does_it_collide:
+            does_it_collide = True
+            break
+    return does_it_collide,location,velocity_at_time
+    
 def did_it_collide(G,B,eF,eU,W,H,T,R):
     # This figures out if the ball collided with the backboard
     # Parameters:
@@ -80,4 +52,5 @@ def did_it_collide(G,B,eF,eU,W,H,T,R):
         IsIt = True
     else:
         IsIt = False
-    return IsIt
+    Location = np.squeeze(Dir1[:,LRmin[0]])+np.squeeze(Dir2[:,DUmin[0]])-P-B
+    return Location,IsIt
