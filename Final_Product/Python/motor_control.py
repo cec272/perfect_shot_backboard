@@ -61,4 +61,3 @@ def gearToStep(gearTeeth1, gearTeeth2, angle, degPerStep):
 	steps = round(theta2/degPerStep)
 	
 	return steps
-	

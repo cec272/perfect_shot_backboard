@@ -186,8 +186,26 @@ while (current_time-start_time) < run_time and run:
         # Use controller to find backboard movement
         # Move backboard
         steps = []
-        for angle in [theta1_goal, theta2_goal, theta3_goal]
-            steps.append(gearToStep(leverGearTeeth, motorGearTeeth, angle, degPerStep))
+        direc = []
+        motorNumber = 1
+        for angle in [theta1_goal, theta2_goal, theta3_goal]:
+            des_step = gearToStep(leverGearTeeth, motorGearTeeth, angle, degPerStep)
+            if motorNumber == 1:
+                if des_step < 0:
+                    steps.append(abs(des_step))
+                    direc.append(stepper.BACKWARD)
+                else:
+                    steps.append(des_step)
+                    direc.append(stepper.FORWARD)
+            if motorNumber == 2 or motorNumber == 3:
+                if des_step < 0:
+                    steps.append(abs(des_step))
+                    direc.append(stepper.FORWARD)
+                else:
+                    steps.append(des_step)
+                    direc.append(stepper.BACKWARD)
+            motorNumber = motorNumber + 1
+        moveStepper([motor1, motor2, motor3], steps, direc)
         state = 4
         end_state_3_time = time.time()
     elif state == 4:

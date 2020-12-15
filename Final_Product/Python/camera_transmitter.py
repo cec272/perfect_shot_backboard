@@ -126,7 +126,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         data_count = data_count+1
     else:
         data_count = 0
-        
+    '''    
     #test opening the csv file
     camera_measurements = np.zeros((3, 6))
     t_camera = np.zeros((3,1))
@@ -141,4 +141,4 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     print(camera_measurements)
     #print(ballDetected)
     #print(data)
-    
+    '''
