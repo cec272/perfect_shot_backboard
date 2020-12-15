@@ -51,10 +51,9 @@ while run and ((current_time-start_time) < end_time):
     with open(csv_interface,'r') as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
-            holder = row[:]
-    X,Y,Z,X_d,Y_d,Z_d = holder[0, 0:6]
-    P = np.matmul(np.transpose(holder[0, 6:12]), holder[0, 6:12])
-    cov_x,cov_y,cov_z,cov_x_d,cov_y_d,cov_z_d = np.diag(P)
+            info = row[:]
+    X,Y,Z,X_d,Y_d,Z_d = info[0:6]
+    cov_x,cov_y,cov_z,cov_x_d,cov_y_d,cov_z_d = info[6:12]
     th1=0
     th2=0
     th3=0
@@ -67,7 +66,7 @@ while run and ((current_time-start_time) < end_time):
     cov_theta=0
     cov_phi=0
     cov_psi=0
-    state = state_calc(holder[0, 12])
+    state = state_calc(info(12))
     # Update interface
     my_values_1={str(X):(mean_1,row_4),str(Y):(mean_1,row_5),str(Z):(mean_1,row_6),str(X_d):(mean_1,row_7),str(Y_d):(mean_1,row_8),str(Z_d):(mean_1,row_9),str(th1):(mean_2,row_4),str(th2):(mean_2,row_5),str(th3):(mean_2,row_6),str(theta):(mean_2,row_7),str(phi):(mean_2,row_8),str(psi):(mean_2,row_9)}
     my_values_2={str(cov_x):(cov_1,row_4),str(cov_y):(cov_1,row_5),str(cov_z):(cov_1,row_6),str(cov_x_d):(cov_1,row_7),str(cov_y_d):(cov_1,row_8),str(cov_z_d):(cov_1,row_9),str(cov_th1):(cov_2,row_4),str(cov_th2):(cov_2,row_5),str(cov_th3):(cov_2,row_6),str(cov_theta):(cov_2,row_7),str(cov_phi):(cov_2,row_8),str(cov_psi):(cov_2,row_9)}

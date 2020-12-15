@@ -17,7 +17,7 @@ import SR_SPF_Ball
 import find_angles
 
 h = 0.1
-x_ball_init = np.array([1,1,1,1,1,1])
+x_ball_init = np.array([[1],[1],[1],[1],[1],[1]])
 ffun = 'ball_calc.ball_calc'
 front = np.transpose(np.array([1,0,0]))
 up = np.transpose(np.array([0,1,0]))
@@ -36,11 +36,10 @@ x_new = transformations.transform_baseboard_to_backboard(theta,phi,psi,x)
 
 n_sig = 3
 
-measurement = np.array([1,1,1,1,1,1])+(np.random.rand(6,1)-0.5)
-
-P_x = np.identity(6)
-P_v = np.identity(6)
-P_n = np.identity(6)
+measurement = np.array([1,1,1,1,1,2])
+P_x = np.identity(6)*0.1+0.0001
+P_v = np.identity(6)*0.1+0.0001
+P_n = np.identity(6)*0.1+0.0001
 
 S_x0 = np.linalg.cholesky(P_x)
 S_v0 = np.linalg.cholesky(P_v)
@@ -51,15 +50,17 @@ r_B0 = np.array([0,-0.1,0])
 r_GB0 = np.array([0,-1,0])
 #print(system_iterator.system_iterator(e_b,r_B0,r_GB0,h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop).shape)
 #print(path_tracker.path_tracker(h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop,backboard))
-#print(SR_SPF_Ball.SR_SPF_Ball(x_ball_init,S_x0,S_v0,S_n0,n_sig,p,measurement,h))
+print(SR_SPF_Ball.SR_SPF_Ball(x_ball_init,S_x0,S_v0,S_n0,n_sig,measurement,h))
 
 A = [1,2,3]
 B = [4,5,6]
 C = np.append(transformations.transform_camera_to_baseboard(A),transformations.transform_camera_to_baseboard(B))
-print(C) 
+#print(C) 
 
 theta = 0 
 phi = 0
 psi = 0 
 r_B = .2
-print(find_angles.find_angles(theta,phi,psi,r_B))
+#print(find_angles.find_angles(theta,phi,psi,r_B))
+
+#print(np.diag(np.matmul(S_xk,np.transpose(S_xk))))
