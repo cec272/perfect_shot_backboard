@@ -25,8 +25,13 @@ def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,measurement,dt):
   H = np.identity(6)
   ## Create sigma points
   nx = len(x_0)
+<<<<<<< Updated upstream
   ensp = np.ones((1,nx*2+1));
   sigma_points=np.matmul(x_0,ensp)+np.concatenate((np.zeros((nx,1)),-n_sig*S_x0,n_sig*S_x0),axis=1);
+=======
+  ensp = np.ones((1,n_sig*2+1));
+  sigma_points=numpy.matmul(x_0,ensp)+np.concatenate(np.zeros(nx),-S_x0,S_x0);
+>>>>>>> Stashed changes
 
   ## Predict
 <<<<<<< HEAD

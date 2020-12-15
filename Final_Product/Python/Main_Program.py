@@ -13,7 +13,7 @@ import pygame
 from pygame.locals import *
 import os
 import math
-import Geometric_Variables
+import Geometric_Variables as g
 import Physical_Variables as p
 from interface_variables import *
 from system_iterator import *
@@ -68,7 +68,7 @@ state        = 0
 motor_1_reset= False
 motor_2_reset= False
 motor_3_reset= False
-ball_radius  = 65.42 # CHANGE TO BALL LATER!!!!!!
+ball_radius  = 0.06542 # CHANGE TO BALL LATER!!!!!!
 
 # Motor GPIO pins and coils
 coils = (
@@ -141,9 +141,13 @@ lam0 = 3.8415 # chi2.ppf(0.95,0)
 N = 10 # Number of samples
 n_sig = 3; # Number of sigma points
 R = 1
+delT = 0.1 # Discritizing time step for ball sim
 
 ######## START WHILE LOOP ##########
 while (current_time-start_time) < run_time and run:
+    ## Update loop variable
+    current_time = time.time()
+    
     ## Collect measurements
     # Collect image from csv
     camera_measurements = np.zeros((3,6))
@@ -166,6 +170,8 @@ while (current_time-start_time) < run_time and run:
             camera_measurements[row_num,:] = row[:6]
             t_camera[row_num] = row[6]
             row_num = row_num + 1
+    '''
+    
     '''
     ## Process measurements
     for i in range(0,3):
@@ -196,7 +202,7 @@ while (current_time-start_time) < run_time and run:
         ## Check covariances
         if covariances_small_enough(S_xk,min_covariances) and (state == 1):
             state = 2
-        
+    '''    
     
 
 ## Process according to state
@@ -221,17 +227,21 @@ while (current_time-start_time) < run_time and run:
             direc.append(stepper.FORWARD)
         # Move motors that haven't hit their limit
         moveStepper(motors, [1]*len(motors), direc)
+        print('resetting motors!!')
         # Move onto next state once all motorrs have hit their limits
         if motor_1_reset and motor_2_reset and motor_3_reset:
             state = 1
+    elif state == 1: ## CHANGE THIS !!!!!!!!!!!!!!!!!
+        print('Woohooo PRETEND STATE 1 WAS REACHED')
+        state = 2
     elif state == 2:
-        x_ball_init = r_camera + x_hat
-        working_orientations = system_iterator(e_b,r_B0,rGB0,h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop)
+        x_ball_init = g.r_cam + x_hat
+        working_orientations = system_iterator(g.e_b,g.r_B0,g.rGB0,delT,x_ball_init,g.front,g.up,g.W_of_backboard,g.H_of_backboard,g.T_of_backboard,ball_radius,g.center_hoop)
         for i in range(0,len(working_orientations)):
             does_it_work,theta_1,theta_2,theta_3 = find_angles(working_orientations[1,i],working_orientations[2,i],working_orientations[3,i],working_orientations[4,i])
             if does_it_work:
                 break
-        theta1_goal,theta2_goal,theta3_goal = orientation_selector(th_1_current,th_2_current,th_3_current,np.array([theta_1,theta_2,theta_3]))
+        theta1_goal,theta2_goal,theta3_goal = orientation_selector(g.th1_10,g.th1_20,g.th3_30,np.array([theta_1,theta_2,theta_3]))
         state = 3
     elif state == 3:
         # Use controller to find backboard movement
@@ -272,3 +282,5 @@ while (current_time-start_time) < run_time and run:
             
     # Print stuff diagnosing
     print(state)
+
+GPIO.cleanup()

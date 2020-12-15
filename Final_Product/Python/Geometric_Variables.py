@@ -110,3 +110,7 @@ motor_rod30 = np.array([0.03747516,0.127,0.04286504])
 L1 = 0.11811
 L2 = 0.11811
 L3 = 0.11811
+
+### Hoop
+# center of hoop wrt baseboard
+center_hoop = np.array([0.229, 0.089, 0.329])

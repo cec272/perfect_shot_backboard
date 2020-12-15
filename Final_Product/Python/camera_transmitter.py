@@ -21,8 +21,8 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 framesToPlot = 8
 
 # define the lower and upper boundaries of the ball in the HSV color space
-colorLower = (54, 46, 50)
-colorUpper = (105, 255, 255)
+colorLower = (10, 0, 22)
+colorUpper = (123, 139, 176)
 
 # keep track of bounding box locations in a dictionary
 ball_dict = {'location': [], 'time': [], 'velocity': [[0, 0, 0]]}
