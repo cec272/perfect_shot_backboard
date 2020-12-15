@@ -56,7 +56,7 @@ moveStepper([motor1, motor2, motor3], [20, 20, 20], [stepper.FORWARD, stepper.BA
 print('Motors Locked')
 while True:
     t = time.time()
-    if (t - t_start) >= 20 and not motors_released:
+    if (t - t_start) >= 5 and not motors_released:
         print('Motors Have Been Released')
         motor1.release()
         motor2.release()
