@@ -1,15 +1,17 @@
 # Harrison Hidalgo
 # ECE 5725 - Final Project
-#
+# This program parses through possible combos of theta1 theta2 and theta3
+# to find necessary combo.
 
 def find_angles(theta,phi,psi,r_B):
     import numpy as np
     import transformations
     import math
+    import iteration_variables as IV
     N=5;
-    th1=linspace(th1_start,th1_end,N);
-    th2=linspace(th2_start,th2_end,N);
-    th3=linspace(th3_start,th3_end,N);
+    th1=np.linspace(IV.th1_start,IV.th1_end,N);
+    th2=np.linspace(IV.th2_start,IV.th2_end,N);
+    th3=np.linspace(IV.th3_start,IV.th3_end,N);
     rP1= r_B-transformations.transform_baseboard_to_backboard(theta,phi,psi,(rGB0+rGP10))
     rP2= r_B-transformations.transform_baseboard_to_backboard(theta,phi,psi,(rGB0+rGP20))
     rP3= r_B-transformations.transform_baseboard_to_backboard(theta,phi,psi,(rGB0+rGP30))

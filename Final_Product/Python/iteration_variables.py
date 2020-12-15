@@ -19,3 +19,12 @@ psi_max = 0.5
 B_min = 0
 B_max = 0.25
 
+# th1 maximum and minimum
+th1_start = 0
+th1_end = 0.5
+# th2 maximum and minimum
+th2_start = 0
+th2_end = 0.5
+# th3 maximum and minimum
+th3_start = 0
+th3_end = 0.5

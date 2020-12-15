@@ -131,9 +131,12 @@ while (current_time-start_time) < run_time and run:
     ## Process measurements
     for i in range(0,3):
         measurement = camera_measurements[i,:]
-        eval('t_' + str(i) + '=t_camera[i]')
-        eval('x_hat,S_xk = SR_SPF_Ball(x_hat,S_xk,S_v0,S_n0,n_sig,weights,p,measurement,t_' str(i) '-t_last)')
-        eval('t_last = t' + str(i))
+        x_pos,S_xk_pos = SR_SPF_Ball(x_hat,S_xk,S_v0,S_n0,n_sig,measurement,t_camera[i]-t_last)
+        P = np.matmul(S_xk_pos,np.transpose(S_xk_pos))
+        if measurement_validation(measurement,P,t_camera[i]-t_last,lam0,R,x_hat):
+            t_last = t_camera[i]
+            x_hat = x_pos 
+            S_xk = S_xk_pos
     for i in range(0,N):
         #Process imu measurements
     
@@ -175,7 +178,7 @@ while (current_time-start_time) < run_time and run:
         # Do nothing
     elif state == 2:
         x_ball_init = locate_ball()
-        working_orientations = system_iterator(iteration_vals,e_b,r_B0,rGB0,h,x_ball_init,'ball_calc',p,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop)
+        working_orientations = system_iterator(e_b,r_B0,rGB0,h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop)
         for i in range(0,len(working_orientations)):
             does_it_work,theta_1,theta_2,theta_3 = find_angles(working_orientations[1,i],working_orientations[2,i],working_orientations[3,i],working_orientations[4,i])
             if does_it_work:

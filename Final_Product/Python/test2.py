@@ -50,4 +50,10 @@ r_B0 = np.array([0,-0.1,0])
 r_GB0 = np.array([0,-1,0])
 #print(system_iterator.system_iterator(e_b,r_B0,r_GB0,h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop).shape)
 #print(path_tracker.path_tracker(h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop,backboard))
-print(SR_SPF_Ball.SR_SPF_Ball(x_ball_init,S_x0,S_v0,S_n0,n_sig,p,measurement,h))
+#print(SR_SPF_Ball.SR_SPF_Ball(x_ball_init,S_x0,S_v0,S_n0,n_sig,p,measurement,h))
+
+theta = 0 
+phi = 0
+psi = 0 
+r_B = .2
+print(find_angles(theta,phi,psi,r_B))
