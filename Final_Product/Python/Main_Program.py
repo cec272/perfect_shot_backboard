@@ -118,7 +118,7 @@ while (current_time-start_time) < run_time and run:
     # Collect image from csv
     camera_measurements = np.zeros((3, 6))
     t_camera = np.zeros((3,1))
-    with open(csv_image,'r') as csvfile:
+    with open(image_data,'r') as csvfile:
         csvreader = csv.reader(csvfile)
         row_num = 0
         for row in csvreader:
@@ -127,7 +127,16 @@ while (current_time-start_time) < run_time and run:
             row_num = row_num + 1
             
     # Collect imu data from csv
-
+    imu_measurements = np.zeros((3, 4))
+    t_imu = np.zeros((3,1))
+    with open(imu_data,'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        row_num = 0
+        for row in csvreader:
+            camera_measurements[row_num,:] = row[:6]
+            t_camera[row_num] = row[6]
+            row_num = row_num + 1
+    
     ## Process measurements
     for i in range(0,3):
         if (not camera_measurement[i,1] == None):
@@ -175,8 +184,6 @@ while (current_time-start_time) < run_time and run:
         # Move onto next state once all motorrs have hit their limits
         if motor_1_reset and motor_2_reset and motor_3_reset:
             state = 1
-    elif state == 1:
-        # Do nothing
     elif state == 2:
         x_ball_init = r_camera + x_hat
         working_orientations = system_iterator(e_b,r_B0,rGB0,h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop)
