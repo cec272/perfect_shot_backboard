@@ -52,6 +52,11 @@ r_GB0 = np.array([0,-1,0])
 #print(path_tracker.path_tracker(h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop,backboard))
 #print(SR_SPF_Ball.SR_SPF_Ball(x_ball_init,S_x0,S_v0,S_n0,n_sig,p,measurement,h))
 
+A = [1,2,3]
+B = [4,5,6]
+C = np.append(transformations.transform_camera_to_baseboard(A),transformations.transform_camera_to_baseboard(B))
+print(C) 
+
 theta = 0 
 phi = 0
 psi = 0 

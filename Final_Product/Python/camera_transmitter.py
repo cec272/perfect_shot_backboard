@@ -11,6 +11,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import cv2
 import imutils
+import transformations
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -117,6 +118,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     ### *** WRITE TO CSV FILE *** ###
     if ballDetected:
         data[data_count,:] = [ball_dict['location'][-1][0]/1000, ball_dict['location'][-1][1]/1000, ball_dict['location'][-1][2], ball_dict['velocity'][-1][0], ball_dict['velocity'][-1][1], ball_dict['velocity'][-1][2], ball_dict['time'][-1]]
+        data[data_count,:] = np.append(transformations.transform_camera_to_baseboard(data[data_count,0:3]),transformations.transform_camera_to_baseboard(data[data_count,3:6]))
     else:
         data[data_count,:] = [None, None, None, None, None, None, time.time()]
     with open(csv_image,'w') as csvfile:
@@ -126,6 +128,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         data_count = data_count+1
     else:
         data_count = 0
+    with open('run.csv','r') as csvfile:
+        csvreader = csv.reader(csvfile)
+        for row in csvreader:
+            run = row[0]
+    
     '''    
     #test opening the csv file
     camera_measurements = np.zeros((3, 6))

@@ -37,6 +37,6 @@ def transform_camera_to_baseboard(position_camera):
 	#
 	# Parameters:
 	# position_camera: location in camera coordinates
-	new_position = np.array([position_camera[1],-position_camera[2],-position_camera[3]])
+	new_position = [position_camera[0],-position_camera[1],-position_camera[2]]
 	return new_position
 	
