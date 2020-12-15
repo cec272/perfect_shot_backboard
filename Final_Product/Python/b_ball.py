@@ -8,9 +8,9 @@ def b_ball(c,g,m,x_vel,y_vel,z_vel):
 #    23-Nov-2020 22:18:28
 	import math
 	import numpy as np
-	t2 = x_vel**2
-	t3 = y_vel**2
-	t4 = z_vel**2
+	t2 = (x_vel)**2
+	t3 = (y_vel)**2
+	t4 = (z_vel)**2
 	t5 = t2+t3+t4
 	t6 = math.sqrt(t5)
 	b = np.array([-c*t6*x_vel,-c*t6*y_vel,-g*m-c*t6*z_vel])

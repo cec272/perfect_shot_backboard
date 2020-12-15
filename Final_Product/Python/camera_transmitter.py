@@ -28,7 +28,7 @@ colorUpper = (123, 139, 176)
 ball_dict = {'location': [], 'time': [], 'velocity': [[0, 0, 0]]}
 
 # parameters
-r_ball = 65.42#139.7 # radius of ball (mm)
+r_ball = 139.7 # radius of ball (mm)
 f_lens = 3.04 # camera lens focal length (mm)
 h_sensor = 2.76 # camera sensor height (mm)
 
@@ -46,7 +46,7 @@ current_time = time.time()
 run = True
 start_time = time.time()
 current_time = time.time()
-end_time = 20
+end_time = 60
 
 ############## GET IMAGE 1 ##############
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):

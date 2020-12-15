@@ -5,9 +5,9 @@
 def covariances_small_enough(S,min_covariances):
 	import numpy as np
 	import math
-	P = np.matmul(S,np.transpose(S))
+	#P = np.matmul(S,np.transpose(S))
 	is_it = True
 	for i in range(0,len(S)):
-		if min_covariances[i] < math.sqrt(P[i,i]):
+		if min_covariances[i] < math.sqrt(S[i,i]):
 			is_it=False
 	return is_it

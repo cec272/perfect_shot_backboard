@@ -44,7 +44,8 @@ def find_angles(theta,phi,psi,r_B):
 
                 if (np.linalg.norm(r_P1_MP1-rP1)-GV.L1 < 0.1)and(np.linalg.norm(r_P2_MP2-rP2)-GV.L2 < 0.1)and(np.linalg.norm(r_P3_MP3-rP3)-GV.L3 < 0.1):
                     does_it_work=True
-                    theta_1 = np.append(theta_1,th_1)
-                    theta_2 = np.append(theta_2,th_2)
-                    theta_3 = np.append(theta_3,th_3)
+                    theta_1 = th2_1
+                    theta_2 = th2_2
+                    theta_3 = th2_3
+                    break
     return does_it_work,theta_1,theta_2,theta_3

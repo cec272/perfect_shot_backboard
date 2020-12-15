@@ -52,13 +52,16 @@ motors_released = False
 t_start = time.time()
 print('Motors Moving')
 #moveStepper([motor3], [20], [stepper.FORWARD])
-moveStepper([motor1, motor2, motor3], [20, 20, 20], [stepper.FORWARD, stepper.BACKWARD, stepper.BACKWARD])
+moveStepper([motor1, motor2, motor3], [30, 30, 30], [stepper.FORWARD, stepper.BACKWARD, stepper.BACKWARD])
 print('Motors Locked')
-while True:
+
+run = True
+while run:
     t = time.time()
-    if (t - t_start) >= 5 and not motors_released:
+    if (t - t_start) >= 1 and not motors_released:
         print('Motors Have Been Released')
         motor1.release()
         motor2.release()
         motor3.release()
         motors_released = True
+        run = False

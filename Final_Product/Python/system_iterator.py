@@ -31,6 +31,7 @@ def system_iterator(e_b,r_B0,r_GB0,h,x_ball_init,front,up,W_of_backboard,H_of_ba
 					if path_tracker.path_tracker(h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop,new_backboard):
 						if len(working_orientations)<1:
 							working_orientations = np.array([[theta_iter[i]],[phi_iter[j]],[psi_iter[k]],[B_iter[l]]])
+							break
 						else:
 							working_orientations=np.append([working_orientations],np.transpose(np.array([[theta_iter[i]],[phi_iter[j]],[psi_iter[k]],[B_iter[l]]])))
 	working_orientations=np.reshape(working_orientations,(4,len(working_orientations)/4))

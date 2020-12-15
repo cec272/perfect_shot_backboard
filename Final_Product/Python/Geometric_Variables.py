@@ -93,7 +93,7 @@ camera_up13 = -1
 camera_dx = 0.44558
 camera_dy = 0.40005
 camera_dz = 0.00820
-r_cam = np.array([camera_dx,camera_dy,camera_dz])
+r_cam = np.transpose(np.array([[camera_dx,camera_dy,camera_dz,0,0,0]]))
 
 rGB0  = -e_b*T_of_backboard/2
 
