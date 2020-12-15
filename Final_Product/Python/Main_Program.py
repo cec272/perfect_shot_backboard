@@ -49,7 +49,7 @@ with open(run_status,'w') as csvfile:
 ## Start other scripts
 os.system('python3 camera_transmitter.py &')
 #os.system('python3 imu_transmitter.py &')
-os.system('python3 interface_creator.py &')
+#os.system('python3 interface_creator.py &')
 
 ## Create constants
 current_time = time.time()
