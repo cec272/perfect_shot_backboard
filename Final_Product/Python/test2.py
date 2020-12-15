@@ -14,6 +14,7 @@ import math
 import path_tracker
 import system_iterator
 import SR_SPF_Ball
+import find_angles
 
 h = 0.1
 x_ball_init = np.array([1,1,1,1,1,1])
@@ -61,4 +62,4 @@ theta = 0
 phi = 0
 psi = 0 
 r_B = .2
-print(find_angles(theta,phi,psi,r_B))
+print(find_angles.find_angles(theta,phi,psi,r_B))

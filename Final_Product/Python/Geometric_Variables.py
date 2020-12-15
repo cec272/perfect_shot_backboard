@@ -1,4 +1,4 @@
-# Harrison Hidalgo
+# Harrison Hidalgo and Christopher Chan
 # ECE 5725 - Final Project
 # 
 
@@ -22,6 +22,14 @@ alpha1= 0.098425
 Gy    = 0.098425
 
 #### Other dimensions
+front = np.array([0,0,1])
+up = np.array([0,1,0])
+left = np.cross(front,up)
+e_b = np.array([0,0,1])
+W_of_backboard =0.4572
+H_of_backboard = 0.1969
+T_of_backboard = 0.0032
+
 ### Gears 
 ## Positions wrt baseboard
 # Gear 1
@@ -77,3 +85,17 @@ camera_up13 = -1
 camera_dx = 0.44558
 camera_dy = 0.40005
 camera_dz = 0.00820
+r_cam = np.array([camera_dx,camera_dy,camera_dz])
+
+rGB0  = -e_b*T_of_backboard/2
+
+r_B0 = np.array(0.2286,0.2070,0.1809)
+
+rGP10 = -e_b*T_of_backboard+left*(lam1-Gx)+up*(mu1-Gy)
+rGP20 = -e_b*T_of_backboard+left*(lam2-Gx)+up*(mu2-Gy)
+rGP30 = -e_b*T_of_backboard+left*(lam3-Gx)+up*(mu3-Gy)
+
+motor_rod10 = np.array(16.6103,5,1.6859)/39.37
+motor_rod20 = np.array(9.3198,11.5,1.5635)/39.37
+motor_rod30 = np.array(0.03747516,0.127,0.04286504)
+
