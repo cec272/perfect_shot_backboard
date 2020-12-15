@@ -24,5 +24,5 @@ def ball_calc(x):
 	## Pack up solution
 	vels = np.array([X_dot,Y_dot,Z_dot])
 	accel = np.linalg.solve(Mass,Force)
-	x_dot = np.concatenate((vels,accel))
+	x_dot = np.concatenate((vels,accel),axis=0)
 	return x_dot
