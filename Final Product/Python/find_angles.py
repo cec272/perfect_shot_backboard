@@ -6,7 +6,7 @@ def find_angles(theta,phi,psi,r_B):
     import numpy as np
     import transformations
     import math
-    N=5;
+    N=10;
     th1=linspace(th1_start,th1_end,N);
     th2=linspace(th2_start,th2_end,N);
     th3=linspace(th3_start,th3_end,N);

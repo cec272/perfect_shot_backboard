@@ -12,6 +12,12 @@ import board
 import digitalio
 from adafruit_motor import stepper
 
+## Pygame initialization
+pygame.init()
+pygame.mouse.set_visible(False)
+screen = pygame.display.set_mode((320,240))
+my_font = pygame.font.Font(None,20)
+
 # motor variables
 coils = motor_control.coils
 motor1 = motor_control.motor1

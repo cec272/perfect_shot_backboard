@@ -95,12 +95,6 @@ LS_3 = 15
 motorGearTeeth = 18
 leverGearTeeth = 24
 
-## Pygame initialization
-pygame.init()
-pygame.mouse.set_visible(False)
-screen = pygame.display.set_mode((320,240))
-my_font = pygame.font.Font(None,20)
-
 ## Interrupts
 def LIMIT_SWITCH_1(channel):
     global motor_1_reset
@@ -182,7 +176,11 @@ while (current_time-start_time) < run_time and run:
     elif state == 2:
         x_ball_init = locate_ball()
         working_orientations = system_iterator(iteration_vals,e_b,r_B0,rGB0,h,x_ball_init,'ball_calc',p,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop)
-        theta1_goal,theta2_goal,theta3_goal = orientation_selector(th_1_current,th_2_current,th_3_current,working_orientations)
+        for i in range(0,len(working_orientations)):
+            does_it_work,theta_1,theta_2,theta_3 = find_angles(working_orientations[1,i],working_orientations[2,i],working_orientations[3,i],working_orientations[4,i])
+            if does_it_work:
+                break
+        theta1_goal,theta2_goal,theta3_goal = orientation_selector(th_1_current,th_2_current,th_3_current,np.array([theta_1,theta_2,theta_3])
         state = 3
     elif state == 3:
         # Use controller to find backboard movement
