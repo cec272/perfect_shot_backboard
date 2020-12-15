@@ -5,8 +5,9 @@ import time
 import board
 import digitalio
 from adafruit_motor import stepper
+import math
 
-DELAY = 0.03
+DELAY = 0.02
 
 # configure pins and motors
 coils = (
@@ -48,13 +49,67 @@ def moveStepper(motor, steps, direc):
                 motor[m].onestep(direction=direc[m], style=stepper.DOUBLE)
         time.sleep(DELAY) # pause for motors to complete step
 
+def gearToStep(gearTeeth1, gearTeeth2, angle, degPerStep):
+	'''
+	Converts the angle provided at gear 1 to steps at the motors, where the motor is connected to gear 2
+	Parameters:
+		gearTeeth1      number of teeth at gear 1, e.g. 24 [nondimm]
+		gearTeeth2      number of teeth at gear 2, e.g. 18 [nondimm]
+		angle			desired angle at gear 1, e.g. 1 [rad]
+		degPerStep		degrees per step of the stepper motor, e.g. 1.8 [deg]
+	Outputs
+		steps			number of steps needed at the motor, e.g. 20 [nondimm]
+	'''
+	theta2 = gearTeeth1/gearTeeth2*angle*180/math.pi
+	steps = round(theta2/degPerStep)
+	
+	return steps
+    
 motors_released = False
 t_start = time.time()
 print('Motors Moving')
 #moveStepper([motor3], [20], [stepper.FORWARD])
-moveStepper([motor1, motor2, motor3], [30, 30, 30], [stepper.FORWARD, stepper.BACKWARD, stepper.BACKWARD])
+moveStepper([motor1, motor2, motor3], [5, 5, 5], [stepper.FORWARD, stepper.BACKWARD, stepper.BACKWARD])
 print('Motors Locked')
 
+'''
+# Use controller to find backboard movement
+# Move backboard
+# Gear Specs
+motorGearTeeth = 16
+leverGearTeeth = 36
+degPerStep = 1.8 # number of degrees per step of the motor
+theta1_goal = 0#math.pi/4
+theta2_goal = 0#math.pi/4
+theta3_goal = math.pi/4
+steps = []
+direc = []
+motorNumber = 1
+for angle in [theta1_goal, theta2_goal, theta3_goal]:
+    # find desired angle based on gearing
+    des_step = gearToStep(leverGearTeeth, motorGearTeeth, angle, degPerStep)
+    print(des_step)
+    # determine motor direction
+    if motorNumber == 1:
+        if des_step < 0:
+            steps.append(abs(des_step))
+            direc.append(stepper.BACKWARD)
+        else:
+            steps.append(des_step)
+            direc.append(stepper.FORWARD)
+    if motorNumber == 2 or motorNumber == 3:
+        if des_step < 0:
+            steps.append(abs(des_step))
+            direc.append(stepper.FORWARD)
+        else:
+            steps.append(des_step)
+            direc.append(stepper.BACKWARD)
+    motorNumber = motorNumber + 1
+moveStepper([motor1, motor2, motor3], steps, direc)
+state = 4
+end_state_3_time = time.time()
+print('motors moved!')
+'''        
 run = True
 while run:
     t = time.time()

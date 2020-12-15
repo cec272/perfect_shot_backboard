@@ -4,7 +4,7 @@ import digitalio
 from adafruit_motor import stepper
 import math
 
-DELAY = 0.03
+DELAY = 0.015
 
 # configure pins and motors
 coils = (
@@ -57,7 +57,7 @@ def gearToStep(gearTeeth1, gearTeeth2, angle, degPerStep):
 	Outputs
 		steps			number of steps needed at the motor, e.g. 20 [nondimm]
 	'''
-	theta2 = -gearTeeth1/gearTeeth2*angle*180/math.pi
+	theta2 = gearTeeth1/gearTeeth2*angle*180/math.pi
 	steps = round(theta2/degPerStep)
 	
 	return steps

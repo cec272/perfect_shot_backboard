@@ -12,6 +12,12 @@ from picamera import PiCamera
 import cv2
 import imutils
 import transformations
+import Geometric_Variables as g
+
+# define coordinates of the camera
+camera_dx = g.camera_dx
+camera_dy = g.camera_dy
+camera_dz = g.camera_dz
 
 # initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -21,11 +27,12 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 framesToPlot = 8
 
 # define the lower and upper boundaries of the ball in the HSV color space
-colorLower = (10, 0, 22)
-colorUpper = (123, 139, 176)
+colorLower = (18, 9, 43)
+colorUpper = (96, 161, 209)
 
 # keep track of bounding box locations in a dictionary
-ball_dict = {'location': [], 'time': [], 'velocity': [[0, 0, 0]]}
+ball_dict = {'location': [], 'time': [], 'velocity': [[0, 0, 0]], 'distance':[[0, 0, 0]]}
+ballDetected = False
 
 # parameters
 r_ball = 139.7 # radius of ball (mm)
@@ -46,7 +53,7 @@ current_time = time.time()
 run = True
 start_time = time.time()
 current_time = time.time()
-end_time = 60
+end_time = 600
 
 ############## GET IMAGE 1 ##############
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -77,7 +84,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         M = cv2.moments(c)
         center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
         # Only proceed if the radius meets a minimum size
-        if radius > 10:
+        if radius > 20:
             # draw the circle and centroid on the frame, then update the
             # list of tracked points
             ballDetected = True
@@ -103,9 +110,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     ### *** GET VELOCITY *** ###
     if len(ball_dict['location']) > 1 and ballDetected:
         # get measurments of last 2 frames
-        [x, y, r] = [ball_dict['location'][-1][0], ball_dict['location'][-1][1], ball_dict['location'][-1][2]]
+        [x, y, r] = [camera.resolution[0]-ball_dict['location'][-1][0], camera.resolution[1]-ball_dict['location'][-1][1], ball_dict['location'][-1][2]]
         t = ball_dict['time'][-1]
-        [x0, y0, r0] = [ball_dict['location'][-2][0], ball_dict['location'][-2][1], ball_dict['location'][-2][2]]
+        [x0, y0, r0] = [camera.resolution[0]-ball_dict['location'][-2][0], camera.resolution[1]-ball_dict['location'][-2][1], ball_dict['location'][-2][2]]
         t0 = ball_dict['time'][-2]
         # calculate x
         x_m = x*r_ball/r # (mm)
@@ -119,13 +126,22 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         z_m = (f_lens*r_ball*camera.resolution[1])/(r*h_sensor*1000) # (m)
         z0_m = (f_lens*r_ball*camera.resolution[1])/(r0*h_sensor*1000) # (m)
         v_z = (z0_m-z_m)/(t-t0) # (m/s)
+        ball_dict['distance'].append([x_m/1000, y_m/1000, z_m])
         ball_dict['velocity'].append([v_x, v_y, v_z])
         
     ### *** WRITE TO CSV FILE *** ###
     if ballDetected:
-        data[data_count,:] = [ball_dict['location'][-1][0]/1000, -ball_dict['location'][-1][1]/1000, -ball_dict['location'][-1][2], ball_dict['velocity'][-1][0], -ball_dict['velocity'][-1][1], -ball_dict['velocity'][-1][2], ball_dict['time'][-1]]
+        csv_x = ball_dict['distance'][-1][0]-camera_dx
+        csv_y = ball_dict['distance'][-1][1]
+        csv_z = -ball_dict['distance'][-1][2]-camera_dz
+        csv_vx = ball_dict['velocity'][-1][0]
+        csv_vy = -ball_dict['velocity'][-1][1]
+        csv_vz = -ball_dict['velocity'][-1][2]
+        csv_time = ball_dict['time'][-1]
+        print(csv_x)
+        data[data_count,:] = [csv_x, csv_y, csv_z, csv_vx, csv_vy, csv_vz, ballDetected]
     else:
-        data[data_count,:] = [0, 0, 0, 0, 0, 0, time.time()]
+        data[data_count,:] = [0, 0, 0, 0, 0, 0, ballDetected]
     with open(csv_image,'w') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerows(data)
@@ -133,6 +149,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         data_count = data_count+1
     else:
         data_count = 0
+    
+    # Check if the stop signal has been flagged in another program
     with open('run.csv','r') as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
