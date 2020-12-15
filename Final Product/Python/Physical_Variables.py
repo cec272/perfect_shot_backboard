@@ -8,3 +8,5 @@ g = 9.81
 c = 0.01
 ## Ball Mass
 m = 1
+## Coefficient of Restitution
+e = 1

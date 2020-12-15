@@ -4,7 +4,9 @@
 
 ### Done before: initialize
 
-def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,weights,p,measurement,dt):
+def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,p,measurement,dt):
+  # S_v0 is process noise
+  # S_n0 is sensor noise
   import numpy as np
   from ball_calc import * 
   import weights
