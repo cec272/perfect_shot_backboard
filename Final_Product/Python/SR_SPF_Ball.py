@@ -3,7 +3,6 @@
 # Square-Root Sigma Point Kalman Filter Ball
 
 ### Done before: initialize
-<<<<<<< HEAD
 
 import numpy as np
 from ball_calc import * 
@@ -12,16 +11,6 @@ import weights
 def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,measurement,dt):
   # S_v0 is process noise
   # S_n0 is sensor noise
-=======
-import numpy as np
-from ball_calc import * 
-import weights
-  
-def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,measurement,dt):
-  # S_v0 is process noise
-  # S_n0 is sensor noise
-
->>>>>>> 39233881f105f8274099b297bc22f81077f01639
   H = np.identity(6)
   ## Create sigma points
   nx = len(x_0)
@@ -29,20 +18,12 @@ def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,measurement,dt):
   sigma_points=np.matmul(x_0,ensp)+np.concatenate((np.zeros((nx,1)),-n_sig*S_x0,n_sig*S_x0),axis=1);
 
   ## Predict
-<<<<<<< HEAD
   X_p1 = np.zeros((nx,nx*2+1))
   X_p1[:,0]=ball_calc(sigma_points[:,0])
   x_p1=X_p1[:,0]*weights.wm0;
   for i in range(0,nx):
     X_p1[:,i+1] = dt*ball_calc(sigma_points[:,1+i]);
     X_p1[:,i+1+nx] = dt*ball_calc(sigma_points[:,1+i+nx]);
-=======
-  X_p1[:,0]=ball_calc(sigma_points[:,0])
-  x_p1=X_p1[:,0]*weights.wm0;
-  for i in range(0,n_sig):
-    X_p1[:,i+1] = dt*ball_calc(sigma_points[:,1+i]);
-    X_p1[:,i+1+n_sig] = dt*ball_calc(sigma_point[:,1+i+n_sig]);
->>>>>>> 39233881f105f8274099b297bc22f81077f01639
     x_p1 = weights.wm*(X_p1[:,i+1]+X_p1[:,i+1+n_sig])+x_p1;
   B_k=np.zeros((2*nx,nx));
   for i in range(0,2*nx):
@@ -89,9 +70,3 @@ def cholupdate(R,x,sign):
         R[k,k+1:p] = (R[k,k+1:p] + sign*s*x[k+1:p])/c
         x[k+1:p]= c*x[k+1:p] - s*R[k,k+1:p]
     return R
-
-#def cholupdate2(A,B,sign):
-#  for i in range(0,6):
-#    alpha = 1
-#    for j = 
-  
