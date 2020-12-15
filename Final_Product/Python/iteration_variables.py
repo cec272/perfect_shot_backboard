@@ -2,9 +2,9 @@
 # ECE 5725 - Final Project
 # These are the limits for our degrees of freedom.
 
-# theta = rotation about the z axis
-# phi = rotation about the y axis
-# psi = rotation about the x axis
+# theta = rotation about the z axis in baseboard coords
+# phi = rotation about the y axis in baseboard coords
+# psi = rotation about the x axis in baseboard coords
 
 # Theta maximum and minimum
 theta_min = -0.5

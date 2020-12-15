@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-
 import time
 import board
 import digitalio
 from adafruit_motor import stepper
 
-DELAY = 0.002
+DELAY = 0.03
 
 # configure pins and motors
 coils = (

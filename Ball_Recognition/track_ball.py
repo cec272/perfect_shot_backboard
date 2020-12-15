@@ -7,7 +7,7 @@ import imutils
 import time
 
 # parameters
-r_ball = 139.7 # radius of ball (mm)
+r_ball = 65.42#139.7 # radius of ball (mm)
 f_lens = 3.04 # camera lens focal length (mm)
 h_sensor = 2.76 # camera sensor height (mm)
 
@@ -24,8 +24,8 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 framesToPlot = 8
  
 # define the lower and upper boundaries of the ball in the HSV color space
-orangeLower = (151, 97, 18)
-orangeUpper = (190, 207, 199)
+orangeLower = (54, 46, 50)
+orangeUpper = (105, 255, 255)
 
 # keep track of bounding box locations in a dictionary
 ball_dict = {'location': [], 'time': [], 'velocity': [[0, 0, 0]]}
@@ -87,7 +87,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		# get measurments of last 2 frames
 		[x, y, r] = [ball_dict['location'][-1][0], ball_dict['location'][-1][1], ball_dict['location'][-1][2]]
 		t = ball_dict['time'][-1]
-		[x0, y0, r0] = [ball_dict['location'][-2][0], ball_dict['location'][-2][1], ball_dict['location'][-1][2]]
+		[x0, y0, r0] = [ball_dict['location'][-2][0], ball_dict['location'][-2][1], ball_dict['location'][-2][2]]
 		t0 = ball_dict['time'][-2]
 		# calculate x
 		x_m = x*r_ball/r # (mm)
@@ -104,7 +104,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 		#print(z_m*39.3701)
 		#print(x_m*0.03937)
 		#print(y_m*0.03937)
-		#print(v_x)
+		print(v_z)
 		ball_dict['velocity'].append([v_x, v_y, v_z])
 		
 	### *** TIME-OUT AFTER A CERTAIN TIME *** ###

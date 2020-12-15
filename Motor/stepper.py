@@ -6,7 +6,7 @@ import board
 import digitalio
 from adafruit_motor import stepper
 
-DELAY = 0.002
+DELAY = 0.03
 
 # configure pins and motors
 coils = (
@@ -47,3 +47,18 @@ def moveStepper(motor, steps, direc):
             if s <= steps[m]: # check if step number is valid
                 motor[m].onestep(direction=direc[m], style=stepper.DOUBLE)
         time.sleep(DELAY) # pause for motors to complete step
+
+motors_released = False
+t_start = time.time()
+print('Motors Moving')
+#moveStepper([motor3], [20], [stepper.FORWARD])
+moveStepper([motor1, motor2, motor3], [20, 20, 20], [stepper.FORWARD, stepper.BACKWARD, stepper.BACKWARD])
+print('Motors Locked')
+while True:
+    t = time.time()
+    if (t - t_start) >= 20 and not motors_released:
+        print('Motors Have Been Released')
+        motor1.release()
+        motor2.release()
+        motor3.release()
+        motors_released = True
