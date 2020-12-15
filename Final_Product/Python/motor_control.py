@@ -2,6 +2,7 @@ import time
 import board
 import digitalio
 from adafruit_motor import stepper
+import math
 
 DELAY = 0.03
 
@@ -44,3 +45,20 @@ def moveStepper(motor, steps, direc):
 			if s <= steps[m]: # check if step number is valid
 				motor[m].onestep(direction=direc[m], style=stepper.DOUBLE)
 		time.sleep(DELAY) # pause for motors to complete step
+
+def gearToStep(gearTeeth1, gearTeeth2, angle, degPerStep):
+	'''
+	Converts the angle provided at gear 1 to steps at the motors, where the motor is connected to gear 2
+	Parameters:
+		gearTeeth1      number of teeth at gear 1, e.g. 24 [nondimm]
+		gearTeeth2      number of teeth at gear 2, e.g. 18 [nondimm]
+		angle			desired angle at gear 1, e.g. 1 [rad]
+		degPerStep		degrees per step of the stepper motor, e.g. 1.8 [deg]
+	Outputs
+		steps			number of steps needed at the motor, e.g. 20 [nondimm]
+	'''
+	theta2 = -gearTeeth1/gearTeeth2*angle*180/math.pi
+	steps = round(theta2/degPerStep)
+	
+	return steps
+	

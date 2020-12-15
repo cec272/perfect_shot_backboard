@@ -21,6 +21,7 @@ import weights
 from scipy.stats.distributions import chi2
 import csv
 from covariance_small_enough import *
+from motor_control import gearToStep
 from motor_control import moveStepper
 import camera_transmitter
 
@@ -83,10 +84,16 @@ motor1 = stepper.StepperMotor(coils[0], coils[1], coils[2], coils[3], microsteps
 motor2 = stepper.StepperMotor(coils[4], coils[5], coils[6], coils[7], microsteps=None)
 motor3 = stepper.StepperMotor(coils[8], coils[9], coils[10], coils[11], microsteps=None)
 
+degPerStep = 1.8 # number of degrees per step of the motor
+
 # Limit switch GPIO pins
 LS_1 = 5
 LS_2 = 14
 LS_3 = 15
+
+# Gear Specs
+motorGearTeeth = 18
+leverGearTeeth = 24
 
 ## Pygame initialization
 pygame.init()
@@ -117,11 +124,14 @@ while (current_time-start_time) < run_time and run:
     # Collect image from csv
     camera_measurements = np.zeros((3, 6))
     t_camera = np.zeros((3,1))
-    with open(image_data,'r') as csvfile:
+    with open(csv_image,'r') as csvfile:
         csvreader = csv.reader(csvfile)
+        row_num = 0
         for row in csvreader:
-            camera_measurements[i,:] = row[:6]
-            t_camera[i] = row[6]
+            camera_measurements[row_num,:] = row[:6]
+            t_camera[row_num] = row[6]
+            row_num = row_num + 1
+            
     # Collect imu data from csv
 
     ## Process measurements
@@ -177,7 +187,9 @@ while (current_time-start_time) < run_time and run:
     elif state == 3:
         # Use controller to find backboard movement
         # Move backboard
-        
+        steps = []
+        for angle in [theta1_goal, theta2_goal, theta3_goal]
+            steps.append(gearToStep(leverGearTeeth, motorGearTeeth, angle, degPerStep))
         state = 4
         end_state_3_time = time.time()
     elif state == 4:

@@ -118,7 +118,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     if ballDetected:
         data[data_count,:] = [ball_dict['location'][-1][0]/1000, ball_dict['location'][-1][1]/1000, ball_dict['location'][-1][2], ball_dict['velocity'][-1][0], ball_dict['velocity'][-1][1], ball_dict['velocity'][-1][2], ball_dict['time'][-1]]
     else:
-        data[data_count,:] = [0, 0, 0, 0, 0, 0, time.time()]
+        data[data_count,:] = [None, None, None, None, None, None, time.time()]
     with open(csv_image,'w') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerows(data)
@@ -127,7 +127,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     else:
         data_count = 0
         
-    ''' test opening the csv file
+    #test opening the csv file
     camera_measurements = np.zeros((3, 6))
     t_camera = np.zeros((3,1))
     with open(csv_image,'r') as csvfile:
@@ -141,5 +141,4 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     print(camera_measurements)
     #print(ballDetected)
     #print(data)
-    '''
     
