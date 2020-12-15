@@ -19,6 +19,7 @@ from interface_variables import *
 from system_iterator import *
 import weights
 import csv
+from SR_SPF_Ball import SR_SPF_Ball
 from covariances_small_enough import *
 from motor_control import gearToStep
 from motor_control import moveStepper
@@ -32,10 +33,18 @@ import numpy as np
 
 ## Addresses
 image_data = 'image.csv'
+data = np.zeros((3,7))
+with open(image_data,'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerows(data)
 
 interface_states = 'interface_states.csv'
 
 imu_data = 'imu.csv' #### make these for imus
+data = np.zeros((3,4))
+with open(imu_data,'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerows(data)
 
 run_status = 'run.csv'
 
@@ -60,11 +69,6 @@ motor_1_reset= False
 motor_2_reset= False
 motor_3_reset= False
 ball_radius  = 65.42 # CHANGE TO BALL LATER!!!!!!
-min_covariances=[ball_radius/4,ball_radius/4,ball_radius/4,.076,.076,.076]
-
-lam0 = 3.8415 # chi2.ppf(0.95,0)
-N = 10 # Number of samples
-n_sig = 3; # Number of sigma points
 
 # Motor GPIO pins and coils
 coils = (
@@ -125,11 +129,24 @@ GPIO.add_event_detect(LS_1,GPIO.RISING,callback=LIMIT_SWITCH_1,bouncetime=300)
 GPIO.add_event_detect(LS_2,GPIO.RISING,callback=LIMIT_SWITCH_2,bouncetime=300)
 GPIO.add_event_detect(LS_3,GPIO.RISING,callback=LIMIT_SWITCH_3,bouncetime=300)
 
+## Ball Measurement Variables
+x_hat = 0
+S_x0 = np.linalg.cholesky(np.identity(6))*10
+S_v0 = np.linalg.cholesky(np.identity(6))
+S_n0 = np.linalg.cholesky(np.identity(6))
+n_sig = 3
+t_last = None
+min_covariances=[ball_radius/4,ball_radius/4,ball_radius/4,.076,.076,.076]
+lam0 = 3.8415 # chi2.ppf(0.95,0)
+N = 10 # Number of samples
+n_sig = 3; # Number of sigma points
+R = 1
+
 ######## START WHILE LOOP ##########
 while (current_time-start_time) < run_time and run:
     ## Collect measurements
     # Collect image from csv
-    camera_measurements = np.zeros((3, 6))
+    camera_measurements = np.zeros((3,6))
     t_camera = np.zeros((3,1))
     with open(image_data,'r') as csvfile:
         csvreader = csv.reader(csvfile)
@@ -152,7 +169,14 @@ while (current_time-start_time) < run_time and run:
     '''
     ## Process measurements
     for i in range(0,3):
-        if (not camera_measurements[i,1] == None):
+        # Check if there's a ball
+        print(x_hat)
+        print(camera_measurements)
+        if (np.all(x_hat == 0) and not np.all(camera_measurements == 0)):
+            x_hat = camera_measurements [i,:]
+            t_last = t_camera[i]
+            S_xk = S_x0
+        elif (not np.all(camera_measurements == 0)):
             measurement = camera_measurements[i,:]
             x_pos,S_xk_pos = SR_SPF_Ball(x_hat,S_xk,S_v0,S_n0,n_sig,measurement,t_camera[i]-t_last)
             P = np.matmul(S_xk_pos,np.transpose(S_xk_pos))
@@ -163,14 +187,17 @@ while (current_time-start_time) < run_time and run:
     #for i in range(0,N):
         #Process imu measurements
     
-    # Send measurements to interface
-    with open(interface_states,'w') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerow(np.concatenate(x_hat,S_xk,state))
+    # Check if there's a ball
+    if (not np.all(camera_measurements == 0)):
+        # Send measurements to interface
+        with open(interface_states,'w') as csvfile:
+            csvwriter = csv.writer(csvfile) 
+            csvwriter.writerow(np.concatenate(x_hat,np.diag(np.matmul(S_xk,np.transpose(S_xk))),state))
+        ## Check covariances
+        if covariances_small_enough(S_xk,min_covariances) and (state == 1):
+            state = 2
         
-    ## Check covariances
-    if covariances_small_enough(S,min_covariances) and (state == 1):
-        state = 2
+    
 
 ## Process according to state
 # State 0: Reset system.
