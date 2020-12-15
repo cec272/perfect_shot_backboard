@@ -4,6 +4,8 @@ import busio
 import math
 from adafruit_lsm6ds.lsm6ds33 import LSM6DS33 as LSM6DS # accel + gyro
 from adafruit_lis3mdl import LIS3MDL # magnetometer
+import numpy as np
+import csv
 
 run = True
 
@@ -19,10 +21,22 @@ gyro_angles = [0, 0, 0] # pitch, roll, yaw
 comp_filter_angles = [0, 0] # pitch, roll
 time_imu_read = time.time()
 time_imu_read_0 = time.time()
+a_x = []
+a_y = []
+a_z = []
+pitch_accel = []
+roll_accel = []
+pitch_gyro = []
+roll_gyro = []
+yaw_gyro = []
+pitch_filt = []
+roll_filt = []
 
-# Saving addresses
-imu_csv = 'image3.csv'
-time_imu_csv  = 'time3.csv'
+# Writing Data
+imu_csv = 'imu.csv'
+data_to_plot = 3
+data = np.zeros((data_to_plot,4))
+data_count = 0
 
 ### *** Helper Functions *** ###
 # read raw values from the IMU
@@ -125,18 +139,41 @@ def animate(i, a_x, a_y, a_z, pitch_accel, roll_accel, pitch_gyro, roll_gyro, ya
 	return line1, line2, line3, line4, line5, line6, line7, line8, line9, line10,
 
 while run:
-	eval('data[:,' + str(count) + '] = [pitch_filt,roll_filt,0]')
-    with open(imu_csv,'w') as csvfile:
-        csvwriter = csv.writer(csvfile)
-        csvwriter.writerows(data)
-    if count < 3:
-        count = count+1
-    else:
-        count = 0
-    with open('run.csv','r') as csvfile:
-        csvreader = csv.reader(csvfile)
-        for row in csvreader:
-            run = row[0]
+	# get raw accel values
+	getIMU()
+	# compute angular values
+	getAccelAngles()
+	getGyroAngles()
+	compFilter(0.4)
+	# add y to list
+	a_x.append(accel[0])
+	a_y.append(accel[1])
+	a_z.append(accel[2])
+	pitch_accel.append(accel_angles[0])
+	roll_accel.append(accel_angles[1])
+	pitch_gyro.append(gyro_angles[0])	
+	roll_gyro.append(gyro_angles[1])
+	yaw_gyro.append(gyro_angles[2])
+	pitch_filt.append(comp_filter_angles[0])
+	roll_filt.append(comp_filter_angles[1])	
 	
-
+	print(pitch_filt)
+	print(roll_filt)
+	### *** WRITE TO CSV FILE *** ###
+	data[data_count,:] = [pitch_filt[-1], roll_filt[-1], None, time_imu_read]
+	with open(imu_csv,'w') as csvfile:
+		csvwriter = csv.writer(csvfile)
+		csvwriter.writerows(data)
+	if data_count < 2:
+		data_count = data_count+1
+	else:
+		data_count = 0
+	print(data)
+	
+	
+	### *** CHECK IF FUNCTION SHOULD QUIT *** ###
+	with open('run.csv','r') as csvfile:
+		csvreader = csv.reader(csvfile)
+		for row in csvreader:
+			run = row[0]
 
