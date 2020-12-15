@@ -41,6 +41,10 @@ with open(image_data,'w') as csvfile:
         csvwriter.writerows(data)
 
 interface_states = 'interface_states.csv'
+data = np.zeros((2,1))
+with open(interface_states,'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerows(data)
 
 run_status = 'run.csv'
 
@@ -255,7 +259,14 @@ while (current_time-start_time) < run_time and run:
             state = 0
         else:
             state = 1
-        
+    
+    # Send to interfacer
+    interface_states = 'interface_states.csv'
+    data = np.array([ball_in_sight, [state]])
+    with open(interface_states,'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerows(data)
+    
     # Check if a stop signal has been flagged from other programs
     with open(run_status,'r') as csvfile:
         csvreader = csv.reader(csvfile)
