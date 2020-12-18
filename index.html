@@ -68,7 +68,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/lab1.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/cabin.png" alt="" />
                             <h5 class="text-center">Camera-Based Ball Tracking</h5>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/lab2.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/cake.png" alt="" />
                             <h5 class="text-center">Backboard System Design</h5>
                         </div>
                     </div>
@@ -88,7 +88,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/lab3.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/circus.png" alt="" />
                             <h5 class="text-center">Filters</h5>
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/lab4.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/game.png" alt="" />
                             <h5 class="text-center">Locating Desired Backboard Position</h5>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/lab5.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/safe.png" alt="" />
                             <h5 class="text-center">Real Performance and Results</h5>
                         </div>
                     </div>
@@ -188,9 +188,59 @@
                                         <div class="divider-custom-line"></div>
                                     </div>
                                     <!-- Portfolio Modal - Image-->
-                                    <img class="img-fluid rounded mb-5" src="assets/img/lab1/arduino.png" alt="" />
-                                    <!-- Portfolio Modal - Text-->                                    
-                                    
+                                    <img class="img-fluid rounded mb-5" src="assets/img/camera/camera.png" alt="" />
+                                    <!-- Portfolio Modal - Text-->
+                                    <p class="text-justify">In order to track our ball, we used computer vision algorithms from the OpenCV python package.  Our system used only 1 Raspberry Pi camera module connected to the Pi’s CSI port.  Using this module, we found the ball’s position and velocity with respect to the camera’s x, y, and z coordinates.  Our image processing algorithms are heavily influenced from <a href="https://www.pyimagesearch.com/2015/09/14/ball-tracking-with-opencv/">this</a> tutorial.  Our camera was mounted in behind the backboard, with the following coordinate systems:</p>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/camera/coords.png" alt="" />
+                                    <p class="text-justify">We used the OpenCV package to continuously analyze individual frames from the camera’s 30 fps video feed.  Each frame is downsized to 640 X 480 pixels to improve processing speed.  We applied a Gaussian blur over the image to effectively apply a low pass filter that reduces noise and improves smoothing to aid recognition of the spherical ball.  At first, we attempted to create a Haar feature-based cascade classifier for basketballs.  We trained a classifier from over 1000 negative images from imagenet’s room dataset, and 500 positive images taken from our basketball.  Unfortunately, our classifier did not function well, as there were too many false positives.  We believe this is due to our inadequate dataset and the lack of many unique features on the basketball.  The tracking method that we used in the final product analyzes the hue, saturation, value (HSV) colorspace of the entire image.  Since the ball is a relatively unique color, we identify upper and lower HSV thresholds to segment the ball.  After masking the image in the HSV range, we check for contours and create enclosing circles.  The ball is identified if the enclosing circle is larger than a specified radius, and we save the radius and coordinates of the center.  Our algorithm functioned well and was relatively fast, even when no particular attention was made to declutter or color coordinate our clothes or the background.  In our final product, we painted the ball green and adjusted the corresponding HSV bounds for even greater reliability.</p>
+                                    <p class="text-justify">Our HSV segmentation code is shown below:</p>
+                                    <pre><code><p class="text-left">image = frame.array
+# Resize the frame, blur it, and convert to HSV color space
+blurred = cv2.GaussianBlur(image, (11, 11), 0)
+hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+# Construct a mask for the color "orange", then perform a series of
+# dilations and erosions to remove any small blobs left in the mask
+mask = cv2.inRange(hsv, colorLower, colorUpper)
+mask = cv2.erode(mask, None, iterations=2)
+mask = cv2.dilate(mask, None, iterations=2)
+# Find contours in the mask and initialize the current (x,y) center
+# of the ball
+cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+cnts = imutils.grab_contours(cnts)
+center = None
+# Only proceed if at least one contour was found
+if len(cnts) > 0:
+    # Find the largest contour in the mask, then use it to compute
+    # the minimum enclosing circle and centroid
+    c = max(cnts, key=cv2.contourArea)
+    ((x, y), radius) = cv2.minEnclosingCircle(c)
+    M = cv2.moments(c)
+    center = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+    # Only proceed if the radius meets a minimum size
+    if radius > 20:
+        # draw the circle and centroid on the frame, then update the
+        # list of tracked points
+        ballDetected = True
+        cv2.circle(image, (int(x), int(y)), int(radius), (0, 255, 255), 2) 
+        cv2.circle(image, center, 5, (0, 0, 255), -1) 
+        ball_dict['location'].append([x, y, radius])
+        ball_dict['time'].append(time.time())</p></code></pre>
+                                    <p class="text-justify">Below we can see how our ball-recognition software functions:</p>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/camera/ball_circle.png" alt="" />
+                                    <p class="text-justify">For position estimation, the main challenge was converting from the pixel units to distance units (meters).  We used a fixed reference value, the known radius of the ball, and the measured radius in pixel to create a pixel to distance ratio, which is used as a conversion factor to find the ball’s center in distance units.  This works for the (x, y) coordinates, but in order to measure depth, the z-coordinate, we used a formula derived from the thin lens equation and our parameters, the image magnification, sensor height, and lens focal length.  The velocities simply calculated using a first-order finite difference method between the last two distances calculated.</p>
+                                    <pre><code><p class="text-left"># calculate x
+x_m = x*r_ball/r # (mm)
+x0_m = x0*r_ball/r0 # (mm)
+v_x = (x_m-x0_m)/((t-t0)*1000) # (m/s)
+# calculate y
+y_m = y*r_ball/r # (mm)
+y0_m = y0*r_ball/r0 # (mm)
+v_y = (y_m-y0_m)/((t-t0)*1000) # (m/s)
+# calculate z
+z_m = (f_lens*r_ball*camera.resolution[1])/(r*h_sensor*1000) # (m)
+z0_m = (f_lens*r_ball*camera.resolution[1])/(r0*h_sensor*1000) # (m)
+v_z = (z0_m-z_m)/(t-t0) # (m/s)</p></code></pre>
+                                    <p class="text-justify">Using the htop command, we found that the camera-based app tracking takes a significant amount of processing power, so we created a program, camera_transmitter.py that runs this code in the background, and exports the ball’s states into a .csv file.  Our main program then reads from this .csv file, so our control loop timing (besides state estimation error) is not affected by interruptions in camera_transmitter.py.</p>
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -222,9 +272,17 @@
                                         <div class="divider-custom-line"></div>
                                     </div>
                                     <!-- Portfolio Modal - Image-->
-                                    <img class="img-fluid rounded mb-5" src="assets/img/lab2/arduinobluetooth.jpg" alt="" />
-                                    <!-- Portfolio Modal - Text-->                                    
-                                    <!-- Text goes here-->
+                                    <img class="img-fluid rounded mb-5" src="assets/img/design/cad.png" alt="" />
+                                    <!-- Portfolio Modal - Text-->
+                                    <p class="text-justify">The backboard was designed to have 3 degrees of freedom to allow rotation about the backboard’s y- and z-axes and translation about the board’s x-axis.  Since 3 noncollinear points define a plane, the backboard is connected to the baseboard via 3 motor-driven linkages.  Gears translate motor shaft’s rotation into translation, and ball joints translate translation to backboard rotation.  We chose to use stepper motors because we can create an interface to specify the number of desired steps.  The motors are also able to be “locked” by energizing the coils, which is advantageous for keeping the backboard still when the ball makes a collision.  These motors are driven by motor drivers, which each utilize 4 GPIO pins.  One characteristic of stepper motors is that we are not able to determine the actual position of the drive shaft with out additional hardware.  We included limit switches on each of the geared-linkages and use the limit switches to detect when the linkages make contact with the base board.  Then, we can determine the motor position relative to the backboard.  Our design also includes an IMU, which we planned to implement for closed-loop control of the backboard angle.  However, through our testing, we found that open-loop control was sufficient for backboard control. Our Raspberry Pi GPIO configuration is shown below:</p>
+                                    <p class="text-justify">We created a CAD design, which allowed us to verify our linkage design and use 3-D printing and laser cutting to form our components.  We iterated through two versions of our design, moving our hoop to a fixed-point with respect to the base board, and creating gear trains that allow for torque amplification from the drive shafts.</p>
+                                    <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
+                                    <h5></h5>
+                                    <p class="text-justify"></p>
+                                    <pre><code><p class="text-left">
+                                    </p></code></pre>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
+                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -258,7 +316,13 @@
                                     <!-- Portfolio Modal - Image-->
                                     <img class="img-fluid rounded mb-5" src="assets/img/lab3/botandremote.jpg" alt="" />
                                     <!-- Portfolio Modal - Text-->
-                                    <!-- Text goes here-->
+                                    <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
+                                    <h5></h5>
+                                    <p class="text-justify"></p>
+                                    <pre><code><p class="text-left">
+                                    </p></code></pre>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
+                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -292,7 +356,13 @@
                                     <!-- Portfolio Modal - Image-->
                                     <img class="img-fluid rounded mb-5" src="assets/img/lab4/robotparts.jpg" alt="" />
                                     <!-- Portfolio Modal - Text-->
-                                    <!-- Text goes here-->
+                                    <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
+                                    <h5></h5>
+                                    <p class="text-justify"></p>
+                                    <pre><code><p class="text-left">
+                                    </p></code></pre>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
+                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -326,7 +396,13 @@
                                     <!-- Portfolio Modal - Image-->
                                     <img class="img-fluid rounded mb-5" src="assets/img/lab5/robot_front.jpg" alt="" />
                                     <!-- Portfolio Modal - Text-->
-                                    <!-- Text goes here-->
+                                    <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
+                                    <h5></h5>
+                                    <p class="text-justify"></p>
+                                    <pre><code><p class="text-left">
+                                    </p></code></pre>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
+                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
