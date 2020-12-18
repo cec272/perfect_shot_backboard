@@ -129,7 +129,7 @@
                 <!-- About Section Content-->
                 <div class="row">
                     <div class="col-lg-4 ml-auto"><p class="lead">Harrison's bio goes here</p></div>
-                    <div class="col-lg-4 mr-auto"><p class="lead">I'm Chris, a Master of Engineering student in Mechanical Engineering at Cornell University.  I really enjoy all aspects of engineering, from design to prototyping and manufacturing.  I've created these projects because I really enjoy hands on experience and creating projects that can potentially make a difference (plus they're cool!). I am passionate in crossroads of aerospace, robotics, and autonomous vehicles. </p></div>
+                    <div class="col-lg-4 mr-auto"><p class="lead">Chris is a Master of Engineering student in Mechanical Engineering at Cornell University.  He enjoys all aspects of engineering, from design to prototyping and manufacturing.  Chris enjoy hands-on experience and creating projects that can potentially make a difference (plus they're cool!). He is passionate in crossroads of aerospace, robotics, and autonomous vehicles. </p></div>
                 </div>
             </div>
         </section>
@@ -275,14 +275,51 @@ v_z = (z0_m-z_m)/(t-t0) # (m/s)</p></code></pre>
                                     <img class="img-fluid rounded mb-5" src="assets/img/design/cad.png" alt="" />
                                     <!-- Portfolio Modal - Text-->
                                     <p class="text-justify">The backboard was designed to have 3 degrees of freedom to allow rotation about the backboard’s y- and z-axes and translation about the board’s x-axis.  Since 3 noncollinear points define a plane, the backboard is connected to the baseboard via 3 motor-driven linkages.  Gears translate motor shaft’s rotation into translation, and ball joints translate translation to backboard rotation.  We chose to use stepper motors because we can create an interface to specify the number of desired steps.  The motors are also able to be “locked” by energizing the coils, which is advantageous for keeping the backboard still when the ball makes a collision.  These motors are driven by motor drivers, which each utilize 4 GPIO pins.  One characteristic of stepper motors is that we are not able to determine the actual position of the drive shaft with out additional hardware.  We included limit switches on each of the geared-linkages and use the limit switches to detect when the linkages make contact with the base board.  Then, we can determine the motor position relative to the backboard.  Our design also includes an IMU, which we planned to implement for closed-loop control of the backboard angle.  However, through our testing, we found that open-loop control was sufficient for backboard control. Our Raspberry Pi GPIO configuration is shown below:</p>
-                                    <p class="text-justify">We created a CAD design, which allowed us to verify our linkage design and use 3-D printing and laser cutting to form our components.  We iterated through two versions of our design, moving our hoop to a fixed-point with respect to the base board, and creating gear trains that allow for torque amplification from the drive shafts.</p>
-                                    <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
-                                    <h5></h5>
-                                    <p class="text-justify"></p>
                                     <pre><code><p class="text-left">
+GPIO Pin        Use     
+________    ____________
+
+"GPIO5"     {'Limit M1'}
+"GPIO6"     {'M1 B1'   }
+"GPIO13"    {'M1 B2'   }
+"GPIO19"    {'M1 A1'   }
+"GPIO26"    {'M1 A2'   }
+"GPIO15"    {'Limit M2'}
+"GPIO12"    {'M2 A1'   }
+"GPIO16"    {'M2 A2'   }
+"GPIO20"    {'M2 B1'   }
+"GPIO21"    {'M2 B2'   }
+"GPIO14"    {'Limit M3'}
+"GPIO11"    {'M3 A2'   }
+"GPIO13"    {'M3 A1'   }
+"GPIO15"    {'M3 B1'   }
+"GPIO23"    {'M3 B2'   }
+"GPIO2"     {'IMU SDA' }
+"GPIO3"     {'IMU SCL' }
                                     </p></code></pre>
-                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
-                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
+                                    <p class="text-justify">We created a CAD design, which allowed us to verify our linkage design and use 3-D printing and laser cutting to form our components.  We iterated through two versions of our design, moving our hoop to a fixed-point with respect to the base board, and creating gear trains that allow for torque amplification from the drive shafts.</p>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/design/cad2.png" alt="" />
+                                    <p class="text-justify">The final bill-of-materials is shown below:</p>
+                                    <pre><code><p class="text-left">
+Description           Unit Cost      Type of Unit     Total Cost
+_________________________    __________    ______________    __________
+
+{'Basketball Rim + Ball'}    {'$9.95' }    {'1 Pack'    }    {'$9.95' }
+{'IMU'                  }    {'$9.95' }    {'1 Pack'    }    {'$9.95' }
+{'PiCamera'             }    {'$12.99'}    {'1 Pack'    }    {'$12.99'}
+{'Wood'                 }    {'$4.29' }    {'1/8"X2"X4"'}    {'$4.29' }
+{'Rod End'              }    {'$1.55' }    {'1 Pack'    }    {'$9.30' }
+{'5/16-18 Hex Nut'      }    {'$3.70' }    {'100 Pack'  }    {'$3.70' }
+{'Stepper Motor'        }    {'$23.99'}    {'3 Pack'    }    {'$23.70'}
+{'Limit Switch'         }    {'$7.99' }    {'10 Pack'   }    {'$7.99' }
+{'Motor Driver'         }    {'$4.95' }    {'1 Pack'    }    {'$14.85'}
+{0×0 char               }    {0×0 char}    {0×0 char    }    {0×0 char}
+{'Total'                }    {0×0 char}    {0×0 char    }    {'$97.01'}
+                                    </p></code></pre>
+                                    <p class="text-justify">We constructed the physical backboard after several iterations of 3-D printing and laser cutting.  When we built the physical backboard, we found that due to our tolerances and limited access to build facilities, there was some play in the linkages and UV-stabilizer joint.  Our ball-socket joints also had a limited range of motion, which decreased our controllability of the system.</p>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/design/full_build.png" alt="" />
+                                    <p class="text-justify">Below is a video explaining our backboard build:</p>
+                                    <iframe class="embed-responsive video" height="315" src="https://www.youtube.com/embed/MhWu1Af6QqI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -394,8 +431,295 @@ v_z = (z0_m-z_m)/(t-t0) # (m/s)</p></code></pre>
                                         <div class="divider-custom-line"></div>
                                     </div>
                                     <!-- Portfolio Modal - Image-->
-                                    <img class="img-fluid rounded mb-5" src="assets/img/lab5/robot_front.jpg" alt="" />
+                                    <img class="img-fluid rounded mb-5" src="assets/img/results/closeup.png" alt="" />
                                     <!-- Portfolio Modal - Text-->
+                                    <p class="text-justify">On the real system, we created main_program.py that begins our sensor collection programs to be run on separate threads in the background.  These start IMU, camera, and piTFT pygame functions that interface with our main program via .csv files.  We also initialize the GPIO pins, interrupts for the limit switches, and variables.</p>
+                                    <p class="text-justify">Our main loop begins, and we collect our measurements by reading from the data outputted into our csv files.  We use a couple of functions to process these measurements according to the state of the system.  The system has 4 possible states: resetting the system according to the limit switches, collecting measurements, calculating desired movements of the backboard, moving the motors, and waiting until the basketball hits the backboard.  We interface between the piTFT through interface_creater, which keeps track of the control actions in a .csv file and checks if a stop button is pressed, which would break our main_program loop variable.</p>
+                                    <p class="text-justify">A diagram explaining our main control loop is shown below:</p>
+                                    <iframe class="embed-responsive video" height="315" src="https://www.youtube.com/embed/PM1zuuhhf3s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    <p class="text-justify">Unfortunately, due to state estimation errors from our inaccurate camera mapping function, we were not able to get accurate enough ball velocity measurements for our system iterator function to reliably predict the optimal backboard angle.  In many cases, there was no result, as the optimal state was not reachable.  In order to combat this solution, we implemented a simpler function, called simple_main_program.py.  This “Better Shot Backboard” system simply checks if the ball is veering left or right of center.  If the ball is left of center, the backboard angles counter-clockwise; if the ball is right of center, the backboard angles clockwise.</p>
+                                    <p class="text-justify">Our Better Shot Backboard was able to successfully track and adjust to different ball trajectories.  We would like to use more optimal control systems, but we believe we need more robust and expensive hardware to do so.  Some improvements we would make are metal-machined linkages with less play, and a UV-joint that uses roller bearings.  We would also add a more robust mounting plate and backboard.  Improving our camera with the inclusion of an RGB-D camera or by mounting the camera in a different orientation (orthogonal to the backboard) would help capture the crucial depth measurement with more accuracy. </p>
+                                    <iframe class="embed-responsive video" height="315" src="https://www.youtube.com/embed/HUtkOMPV6so" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    <p class="text-justify">Our full simple_main_program.py code is shown below:</p>
+                                    <pre><code><p class="text-left">
+# Harrison Hidalgo and Chris Chan
+# ECE 5725 - Final Project
+# This is the main program for our system.
+
+######## BEFORE WHILE LOOP #########
+
+## Import modules
+import time
+import board
+import digitalio
+import RPi.GPIO as GPIO
+import pygame
+from pygame.locals import *
+import os
+import math
+import Geometric_Variables as g
+import Physical_Variables as p
+from interface_variables import *
+from system_iterator import *
+from measurement_validation import *
+import weights
+import csv
+from SR_SPF_Ball import SR_SPF_Ball
+from covariances_small_enough import *
+from motor_control import gearToStep
+from motor_control import moveStepper
+from adafruit_motor import stepper
+from picamera.array import PiRGBArray
+from picamera import PiCamera
+from EKF_filter import *
+import cv2
+import imutils
+import transformations
+import numpy as np
+
+## Addresses
+image_data = 'image.csv'
+data = np.zeros((3,7))
+with open(image_data,'w') as csvfile:
+csvwriter = csv.writer(csvfile)
+csvwriter.writerows(data)
+
+interface_states = 'interface_states.csv'
+data = np.zeros((2,1))
+with open(interface_states,'w') as csvfile:
+csvwriter = csv.writer(csvfile)
+csvwriter.writerows(data)
+
+run_status = 'run.csv'
+
+## Output to this file about the run status
+run = True
+with open(run_status,'w') as csvfile:
+csvwriter = csv.writer(csvfile)
+csvwriter.writerow([run])
+
+## Start other scripts
+os.system('python3 camera_transmitter.py &')
+#os.system('python3 interface_creator.py &')
+
+## Create constants
+current_time = time.time()
+start_time   = time.time()
+reset_time   = 10 # time allowed between detected and system reset
+run_time     = 600
+state        = 0
+motor_1_reset= False
+motor_2_reset= False
+motor_3_reset= False
+
+# Motor GPIO pins and coils
+coils = (
+# motor 1
+digitalio.DigitalInOut(board.D19),  # A1
+digitalio.DigitalInOut(board.D26),  # A2
+digitalio.DigitalInOut(board.D6),   # B1
+digitalio.DigitalInOut(board.D13),  # B2
+# motor 2
+digitalio.DigitalInOut(board.D12),  # A1
+digitalio.DigitalInOut(board.D16),  # A2
+digitalio.DigitalInOut(board.D20),  # B1
+digitalio.DigitalInOut(board.D21),  # B2
+# motor 3
+digitalio.DigitalInOut(board.D27),  # A1
+digitalio.DigitalInOut(board.D17),  # A2
+digitalio.DigitalInOut(board.D22),  # B1
+digitalio.DigitalInOut(board.D23),  # B2
+)
+
+for coil in coils:
+coil.direction = digitalio.Direction.OUTPUT
+
+motor1 = stepper.StepperMotor(coils[0], coils[1], coils[2], coils[3], microsteps=None)
+motor2 = stepper.StepperMotor(coils[4], coils[5], coils[6], coils[7], microsteps=None)
+motor3 = stepper.StepperMotor(coils[8], coils[9], coils[10], coils[11], microsteps=None)
+
+degPerStep = 1.8 # number of degrees per step of the motor
+
+motor1Angle = 0
+motor2Angle = 0
+motor3Angle = 0
+
+angleStepSize = math.pi/10
+
+# Limit switch GPIO pins
+LS_1 = 5
+LS_2 = 14
+LS_3 = 15
+
+# Gear Specs
+motorGearTeeth = 16
+leverGearTeeth = 36
+
+## Interrupts
+GPIO.setmode(GPIO.BCM)  
+GPIO.setup(LS_1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(LS_2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(LS_3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+def LIMIT_SWITCH_1(channel):
+global motor_1_reset
+motor_1_reset = True
+
+def LIMIT_SWITCH_2(channel):
+global motor_2_reset
+motor_2_reset = True
+
+def LIMIT_SWITCH_3(channel):
+global motor_3_reset
+motor_3_reset = True
+
+
+GPIO.add_event_detect(LS_1,GPIO.RISING,callback=LIMIT_SWITCH_1,bouncetime=300)
+GPIO.add_event_detect(LS_2,GPIO.RISING,callback=LIMIT_SWITCH_2,bouncetime=300)
+GPIO.add_event_detect(LS_3,GPIO.RISING,callback=LIMIT_SWITCH_3,bouncetime=300)
+
+## Ball Measurement Variables
+x_hat = 0
+t_last = None
+ball_seen = False
+thresh = 0.2
+
+## EKF Variables 
+Q = np.identity(6)*1        # covariance of state noise
+R = np.identity(6)*10       # covariance of measurement noise
+Pk2k2 = np.identity(6)*100  # initialize the state covariance matrix
+
+######## START WHILE LOOP ##########
+while (current_time-start_time) &#60; run_time and run:
+    ## Update loop variable
+    current_time = time.time()
+    
+    ## Collect measurements
+    # Collect image from csv
+    camera_measurements = np.zeros((3,7))
+    with open(image_data,'r') as csvfile:
+    csvreader = csv.reader(csvfile)
+    row_num = 0
+    for row in csvreader:
+    if row_num >= 3:
+    row_num = 0
+    camera_measurements[row_num,:] = row
+    row_num = row_num + 1
+    ## Process measurements
+    for i in range(0,3):
+    # Check if there's a ball
+    if (np.all(x_hat == 0) and not np.all(camera_measurements == 0)):
+    ball_seen = True
+    
+    x_hat = np.array([[camera_measurements[1,0]]])
+    ball_in_sight = np.array([camera_measurements[1,6]])
+    
+    # Check if there's a ball
+    if ball_seen and state == 1:
+    state = 2    
+    
+    ## Process according to state
+    # State 0: Reset system.
+    # State 1: Collect measurements.
+    # State 2: Find position to move to.
+    # State 3: Move backboard to position.
+    # State 4: Pause until hit.
+    
+    if state == 0:
+    # Check which limit switches have been reached
+    motors = []
+    direc = []
+    if motor_1_reset == False:
+    motors.append(motor1)
+    direc.append(stepper.BACKWARD)
+    if motor_2_reset == False:
+    motors.append(motor2)
+    direc.append(stepper.FORWARD)
+    if motor_3_reset == False:
+    motors.append(motor3)
+    direc.append(stepper.FORWARD)
+    # Move motors that haven't hit their limit
+    moveStepper(motors, [1]*len(motors), direc)
+    #print('resetting motors!!')
+    # Move onto next state once all motorrs have hit their limits
+    if motor_1_reset and motor_2_reset and motor_3_reset:
+    motor1Angle = 0
+    motor2Angle = 0
+    motor3Angle = 0
+    state = 1
+    time.sleep(1)
+    elif state == 2:
+    theta1_goal = 0
+    theta2_goal = 0
+    theta3_goal = 0
+    if x_hat[0,0] >= g.W_of_backboard/3:
+    if motor3Angle &#60; math.pi/4-angleStepSize:
+    theta3_goal = angleStepSize
+    motor3Angle = motor3Angle + angleStepSize
+    if motor1Angle >= math.pi/12+angleStepSize:
+    theta1_goal = -angleStepSize
+    motor1Angle = motor1Angle - angleStepSize
+    elif x_hat[0,0] &#60; g.W_of_backboard/3:
+    if motor1Angle &#60; math.pi/4-angleStepSize:
+    theta1_goal = angleStepSize
+    motor1Angle = motor1Angle + angleStepSize
+    if motor3Angle >= math.pi/12+angleStepSize:
+    theta3_goal = -angleStepSize
+    motor3Angle = motor3Angle - angleStepSize
+    state = 3
+    elif state == 3:
+    # Use controller to find backboard movement
+    # Move backboard
+    steps = []
+    direc = []
+    motorNumber = 1
+    for angle in [theta1_goal, theta2_goal, theta3_goal]:
+    # find desired angle based on gearing
+    des_step = gearToStep(leverGearTeeth, motorGearTeeth, angle, degPerStep)
+    # determine motor direction
+    if motorNumber == 1:
+    if des_step &#60; 0:
+    steps.append(abs(des_step))
+    direc.append(stepper.BACKWARD)
+    else:
+    steps.append(des_step)
+    direc.append(stepper.FORWARD)
+    if motorNumber == 2 or motorNumber == 3:
+    if des_step &#60; 0:
+    steps.append(abs(des_step))
+    direc.append(stepper.FORWARD)
+    else:
+    steps.append(des_step)
+    direc.append(stepper.BACKWARD)
+    motorNumber = motorNumber + 1
+    moveStepper([motor1, motor2, motor3], steps, direc)
+    state = 4
+    end_state_3_time = time.time()
+    elif state == 4:
+    # Do nothing until ball hits
+    if (time.time()-end_state_3_time) > reset_time:
+    motor1.release()
+    motor2.release()
+    motor3.release()
+    state = 0
+    else:
+    state = 1
+    
+    # Send to interfacer
+    interface_states = 'interface_states.csv'
+    data = np.array([ball_in_sight, [state]])
+    with open(interface_states,'w') as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerows(data)
+    
+    # Check if a stop signal has been flagged from other programs
+    with open(run_status,'r') as csvfile:
+    csvreader = csv.reader(csvfile)
+    for row in csvreader:
+    run = row[0]
+GPIO.cleanup()
+                                    </p></code></pre>
+                                    <p class="text-justify"></p>
+                                    <p class="text-justify"></p>
                                     <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
                                     <h5></h5>
                                     <p class="text-justify"></p>
