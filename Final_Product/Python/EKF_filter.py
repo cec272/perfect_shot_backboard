@@ -7,11 +7,11 @@ from runge_kutta import *
 import Physical_Variables as p
 
 def EKF_filter(x_hat_p,Pkk,measurement,Q,R,del_t,t0):
-	F = np.array([[x_hat_p[3, 0]*np.asscalar(del_t),0,0,0,0,0],[0,x_hat_p[4, 0]*np.asscalar(del_t),0,0,0,0],[0,0,x_hat_p[5, 0]*np.asscalar(del_t),0,0,0],[0,0,0,0,0,0],[0,0,0,0,-p.g,0],[0,0,0,0,0,0]])
+	F = [[np.asscalar(x_hat_p[None,3, 0])*del_t,0,0,0,0,0],[0,np.asscalar(x_hat_p[None,4, 0])*del_t,0,0,0,0],[0,0,np.asscalar(x_hat_p[None,5, 0])*del_t,0,0,0],[0,0,0,0,0,0],[0,0,0,0,-p.g,0],[0,0,0,0,0,0]]
 	G = np.identity(6)
 	H = np.identity(6)
 	# Predict
-	t, x_hat_predict = runge_kutta(np.asscalar(del_t),t0,x_hat_p)
+	t, x_hat_predict = runge_kutta(del_t,t0,x_hat_p)
 	Pk2k = np.matmul(np.matmul(F,Pkk),np.transpose(F)) + np.matmul(np.matmul(G,Q),np.transpose(G))
 	# Kalman Gain
 	K = np.matmul(np.matmul(Pk2k,H),np.linalg.inv(np.matmul(np.matmul(H,Pk2k),np.transpose(H))+R))
