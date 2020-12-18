@@ -45,7 +45,7 @@
                     <div class="divider-custom-line"></div>
                 </div>
                 <!-- Masthead Subheading-->
-                <p class="masthead-subheading font-weight-light mb-0">Christopher Chan & Harrison Hildalgo</p>
+                <p class="masthead-subheading font-weight-light mb-0">Christopher Chan & Harrison Hidalgo</p>
                 <p class="masthead-subheading font-weight-light mb-0">Design with Embedded Operating Systems</p>
             </div>
         </header>
@@ -355,8 +355,156 @@ _________________________    __________    ______________    __________
                                     <!-- Portfolio Modal - Text-->
                                     <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
                                     <h5></h5>
-                                    <p class="text-justify"></p>
-                                    <pre><code><p class="text-left">
+                                    <p class="text-justify">To process our data, we created two different filters. We started by creating an Extended Kalman Filter, or an EKF. An EKF is an algorithm that acts very similar to a traditional Kalman Filter. Where they differ is in the types of models they can analyze. A standard Kalman Filter uses linear models, an EKF extends the Kalman Filter to be able to analyze non-linear models. It does this by utilizing a linearization of the non-linear dynamics at the previous estimate of the system. This EKF was simple and quick to put together for preliminary testing. For our final design we strove to design and implement a square-root, sigma point filter, also known as a square-root unscented filter. A sigma point filter, like the EKF, can be used to analyze non-linear data. This is done by fitting gaussian probabilities to non-linear data. First, several points are generated, these points are called sigma points. These points are distributed based on the predicted covariances of the data. Using this system, we assume gaussian process and sensor noise. These points are then fed into the non-linear dynamics of the system. These dynamics scramble the probability distribution. To cope with this, we then fit a new gaussian to the system based on the locations of the sigma points, to compute this we use a system of weights on each sigma-point. We can then use this new probability distribution to process our data with a Kalman Filter. Some advantages of the sigma-point filter are a higher level of accuracy compared to the EKF and computation of the system jacobian is unnecessary. Disadvantages of the sigma-point filter are a higher level of computation and the use of unintuitive design variables. To simplify the use of design variables, we used a weight system that reduced the number of design variables from three to one. </p>
+                                    <img class="img-fluid rounded mb-5" src="assets/img/lab3/botandremote.jpg" alt="" />
+                                    <img class="img-fluid rounded mb-5" src="assets/img/lab3/botandremote.jpg" alt="" />
+                                    <p class="text-justify">A problem that can occur with real time application of Kalman Filters is the lack of robustness of the computation system. Covariances can grow to sizes where numerical errors can lead to disturbances in accuracy. To prevent this we used a square-root variant of the sigma point filter. Instead of working with covariance matrices, the square-root variant uses a cholesky decomposition to take the square root of our covariance matrix. This adds to computation and brings in the need of post processing to get covariance data but we thought that the higher level of robustness was necessary as our system would be greatly affected by errors in system state prediction. We also found that the square-root filter is highly dependent on the definiteness of the covariance matrices. If the covariance matrix goes negative definite, the filter will fail to predict future states. Due to this, it rendered the square root sigma-point filter to be unusable without highly accurate covariance matrices for noise and the prior.</p>
+                                    <p class="text-justify">Below are our Extendended Kalman Filter and Square-Root Sigma Point Filter:</p>
+                                    <pre><code><p class="text-left"># Harrison Hidalgo and Christopher Chan
+# ECE 5725 - Final Project
+# 
+
+import numpy as np
+from runge_kutta import *
+import Physical_Variables as p
+
+def EKF_filter(x_hat_p,Pkk,measurement,Q,R,del_t,t0):
+	F = [[np.asscalar(x_hat_p[None,3, 0])*del_t,0,0,0,0,0],[0,np.asscalar(x_hat_p[None,4, 0])*del_t,0,0,0,0],[0,0,np.asscalar(x_hat_p[None,5, 0])*del_t,0,0,0],[0,0,0,0,0,0],[0,0,0,0,-p.g,0],[0,0,0,0,0,0]]
+	G = np.identity(6)
+	H = np.identity(6)
+	# Predict
+	t, x_hat_predict = runge_kutta(del_t,t0,x_hat_p)
+	Pk2k = np.matmul(np.matmul(F,Pkk),np.transpose(F)) + np.matmul(np.matmul(G,Q),np.transpose(G))
+	# Kalman Gain
+	K = np.matmul(np.matmul(Pk2k,H),np.linalg.inv(np.matmul(np.matmul(H,Pk2k),np.transpose(H))+R))
+	# Update
+	x_hat = x_hat_predict + np.matmul(K,(measurement-x_hat_predict))
+	Pk2k2 = np.matmul(np.matmul((np.identity(6)-np.matmul(K,H)),Pk2k),np.transpose(np.identity(6))-np.matmul(K,H)) + np.matmul(np.matmul(K,R),np.transpose(K))
+	return x_hat, Pk2k2
+                                    </p></code></pre>
+                                    <pre><code><p class="text-left"># Harrison Hidalgo
+# ECE 5725 - Final Project 
+# Square-Root Sigma Point Kalman Filter Ball
+
+### Done before: initialize
+
+import numpy as np
+from ball_calc import *
+from runge_kutta import *
+import weights
+import math
+
+def SR_SPF_Ball(x_0,S_x0,S_v0,S_n0,n_sig,measurement,dt):
+  # S_v0 is process noise
+  # S_n0 is sensor noise
+  H = np.identity(6)
+  ## Create sigma points
+  nx = len(x_0)
+  ensp = np.ones((1,nx*2+1));
+  sigma_points=np.matmul(x_0,ensp)+np.concatenate((np.zeros((nx,1)),n_sig*S_x0,-n_sig*S_x0),axis=1);
+  ## Predict
+  X_p1 = np.zeros((nx,nx*2+1))
+  time,X_p1[:,None,0]=runge_kutta(dt,0,sigma_points[:,None,0])
+  x_p1=X_p1[:,None,0]*weights.wm0;
+  for i in range(0,nx):
+    time,X_p1[:,None,i+1] = runge_kutta(dt,0,sigma_points[:,None,1+i]);
+    time,X_p1[:,None,i+1+nx] = runge_kutta(dt,0,sigma_points[:,None,1+i+nx]);
+    x_p1 = weights.wm*(X_p1[:,None,i+1]+X_p1[:,None,i+1+nx])+x_p1;
+  B_k=np.zeros((2*nx,nx));
+  for i in range(0,2*nx):
+    B_k[i,None,:] = np.sqrt(weights.wc)*np.transpose(X_p1[:,None,i+1]-x_p1)
+  B_k = np.concatenate((B_k,np.transpose(S_v0)),axis=0)
+  S_x1,r = np.linalg.qr(np.transpose(B_k))
+  #S_x1 = np.linalg.cholesky(S_x1+np.sign(weights.wc0)*np.matmul((X_p1[:,None,0]-x_p1),np.transpose(X_p1[:,None,0]-x_p1)))
+  S_x1 = cholupdate(S_x1,X_p1[:,None,0]-x_p1,np.sign(weights.wc0))
+  print('chol 1')
+  print(S_x1)
+  X_p2 = np.zeros((nx,nx*2+1))
+  X_p2[:,None,0]=x_p1;
+  ## Re create sigma points
+  X_p2=np.matmul(x_p1,ensp)+np.concatenate((np.zeros((nx,1)),n_sig*S_x1,-n_sig*S_x1),axis=1);
+  #### Update
+  Y_k=np.zeros((nx,2*nx+1));
+  Y_k[:,None,0] = np.matmul(H,X_p2[:,None,0])
+  y_k = Y_k[:,None,0]*weights.wm0
+  for i in range(1,2*nx+1):
+    Y_k[:,None,i]= np.matmul(H,X_p2[:,None,i])
+    y_k=y_k+Y_k[:,None,i]*weights.wm;
+  C_k=np.zeros((2*nx,nx))
+  for i in range(0,2*nx):
+    C_k[i,None,:]=weights.wc*np.transpose((Y_k[:,None,i+1]-y_k));
+  C_k=np.concatenate((C_k,np.transpose(S_n0)),axis=0);
+  #print('C_k')
+  #print(C_k)
+  S_yk,r=np.linalg.qr(np.transpose(C_k));
+  #S_yk=np.linalg.cholesky(S_yk+np.matmul((Y_k[:,None,0]-y_k),np.transpose((Y_k[:,None,0]-y_k)))*np.sign(weights.wc0))
+  S_yk=cholupdate(S_yk,Y_k[:,None,0]-y_k,np.sign(weights.wc0));
+  P_xy = weights.wc0*np.matmul((X_p2[:,None,0]-x_p1),np.transpose(Y_k[:,None,0]-y_k))
+  for i in range(0,2*nx+1):
+    P_xy=weights.wc* np.matmul((X_p2[:,None,i]-x_p1),np.transpose(Y_k[:,None,i]-y_k))+P_xy
+  Kalman_Gain=np.matmul(np.matmul(P_xy,np.transpose(S_yk)),S_yk);
+  innovation=measurement-np.matmul(H,x_p1)
+  x_hat=x_p1+np.matmul(Kalman_Gain,innovation)
+  KF_gain_cov = np.matmul(Kalman_Gain,P_xy)
+  #S_xk = np.linalg.cholesky(S_x1+np.matmul(KF_gain_cov[:,None,0],np.transpose(KF_gain_cov[:,None,0]))*-1)
+  S_xk = cholupdate(S_x1,KF_gain_cov[:,None,0],-1)
+  for i in range(1,nx):
+    S_xk = cholupdate(S_xk,KF_gain_cov[:,None,i],-1);
+  return x_hat,S_xk
+
+def cholupdate(R,x,sign):
+  #R = validateCovMatrix(R)
+  p = len(x)
+  for k in range(0,p):
+      #print('first')
+      #print(R[k,None,k]**2)
+      #print('sec')
+      #print(sign*x[k]**2)
+    r = np.sqrt(R[k,None,k]**2 + sign*x[k]**2)
+    c = r/R[k,None,k]
+    s = x[k]/R[k,None,k]
+    R[k,None,k] = r
+    if k<p:
+      R[(k+1):p,None,k] = (R[k+1:p,None,k] + sign*s*x[(k+1):p])/c
+      x[(k+1):p]= c*x[(k+1):p] - s*R[(k+1):p,None,k]
+  R = validateCovMatrix(R)
+  return R
+
+def validateCovMatrix(sig):
+  EPS = 10**-6
+  ZERO= 10**-10
+  sigma = sig
+  if (is_pos_def(sigma) == False):
+    w,v = np.linalg.eig(sigma)
+    for n in range(0,len(w)):
+      if (v[n,n] <= ZERO):
+        v[n,n] = EPS
+      sigma = w*v*np.transpose(w)
+  return sigma
+    
+def is_pos_def(x):
+    return np.all(np.linalg.eigvals(x) > 0)
+                                    </p></code></pre>
+                                    <p class="text-justify">A problem that we ran into was the identification of targets. Sometimes our openCV data would register false positives of balls in the frame. To prevent these false positives from damaging our data we implemented a 95% validation gate to our data. This gate would run a hypothesis test with an alpha value of 0.05. If our sample passed this test we would include it in our model, otherwise we would ignore it and move to the next measurement. A future way to improve this system would be to establish a more robust birth and death algorithm for our system. This way we could more accurately track individual targets and be able to track multiple targets.</p>
+                                    <pre><code>
+                                    <p class="text-left"># Harrison Hidalgo
+# ECE 5725 - Final Project
+# This program confirms or rejects measurements. Returns true if accepts, false if it rejects.
+
+def measurement_validation(measurement,P,del_t,lam0,R,x_hat):
+    import numpy as np
+    # Find innovation and covariance
+    H = np.identity(6)
+    innovation = measurement - np.matmul(H,x_hat)
+    S = np.matmul(np.matmul(H,P),np.transpose(H))+R
+    # Find normalized innovation squared
+    lam = np.matmul(np.matmul(np.transpose(innovation),np.linalg.inv(S)),innovation)
+    # Accept or reject measurement
+    if lam < lam0:
+        acceptance = True
+    else:
+        acceptance = False
+    return acceptance
                                     </p></code></pre>
                                     <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
                                     <!-- DELETE THESE WHEN YOU ARE DONE!-->
