@@ -138,7 +138,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         csv_vy = -ball_dict['velocity'][-1][1]
         csv_vz = -ball_dict['velocity'][-1][2]
         csv_time = ball_dict['time'][-1]
-        print(csv_x)
         data[data_count,:] = [csv_x, csv_y, csv_z, csv_vx, csv_vy, csv_vz, ballDetected]
     else:
         data[data_count,:] = [0, 0, 0, 0, 0, 0, ballDetected]
