@@ -45,8 +45,8 @@
                     <div class="divider-custom-line"></div>
                 </div>
                 <!-- Masthead Subheading-->
-                <p class="masthead-subheading font-weight-light mb-0">Christopher Chan & Harrison Hidalgo</p>
-                <p class="masthead-subheading font-weight-light mb-0">Design with Embedded Operating Systems</p>
+                <p class="masthead-subheading font-weight-light mb-0">Christopher Chan (cec272) & Harrison Hidalgo (hh559)</p>
+                <p class="masthead-subheading font-weight-light mb-0">Design with Embedded Operating Systems, Fall 2020</p>
             </div>
         </header>
         <!-- Portfolio Section-->
@@ -62,13 +62,23 @@
                 </div>
                 <!-- Portfolio Grid Items-->
                 <div class="row">
+                    <!-- Portfolio Item 0-->
+                    <div class="col-md-6 col-lg-4 mb-5">
+                      <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal0">
+                        <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                          <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
+                        </div>
+                        <img class="img-fluid" src="assets/img/portfolio/intro_pic.png" alt="" />
+                        <h5 class="text-center">Objective and Introduction</h5>
+                      </div>
+                    </div>
                     <!-- Portfolio Item 1-->
                     <div class="col-md-6 col-lg-4 mb-5">
                         <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal1">
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/cabin.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/camera.png" alt="" />
                             <h5 class="text-center">Camera-Based Ball Tracking</h5>
                         </div>
                     </div>
@@ -78,7 +88,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/cake.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/design.png" alt="" />
                             <h5 class="text-center">Backboard System Design</h5>
                         </div>
                     </div>
@@ -88,7 +98,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/circus.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/spf.png" alt="" />
                             <h5 class="text-center">Filters</h5>
                         </div>
                     </div>
@@ -98,7 +108,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/game.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/simulation.png" alt="" />
                             <h5 class="text-center">Locating Desired Backboard Position</h5>
                         </div>
                     </div>
@@ -108,7 +118,7 @@
                             <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
                                 <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" src="assets/img/portfolio/safe.png" alt="" />
+                            <img class="img-fluid" src="assets/img/portfolio/results.png" alt="" />
                             <h5 class="text-center">Real Performance and Results</h5>
                         </div>
                     </div>
@@ -168,6 +178,54 @@
             <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top"><i class="fa fa-chevron-up"></i></a>
         </div>
         <!-- Portfolio Modals-->
+        <!-- Portfolio Modal 0-->
+        <div class="portfolio-modal modal fade" id="portfolioModal0" tabindex="-1" role="dialog" aria-labelledby="portfolioModal0Label" aria-hidden="true">
+          <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"><i class="fas fa-times"></i></span>
+              </button>
+              <div class="modal-body text-center">
+                <div class="container">
+                  <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                      <!-- Portfolio Modal - Title-->
+                      <h2 class="portfolio-modal-title text-secondary text-uppercase mb-0" id="portfolioModal0Label">Objective and Introduction</h2>
+                      <!-- Icon Divider-->
+                      <div class="divider-custom">
+                        <div class="divider-custom-line"></div>
+                        <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
+                        <div class="divider-custom-line"></div>
+                      </div>
+                      <!-- Portfolio Modal - Image-->
+                      <img class="img-fluid rounded mb-5" src="assets/img/intro/intro_pic.png" alt="" />
+                      <!-- Portfolio Modal - Text-->
+                      <h5>Objective</h5>
+                      <p class="text-justify">Our objective was to create a mechanism which causes you to make a basket whenever you throw a basketball at a hoop. To do this, we used computer vision techniques to process a live feed of a basketball shot and used the Raspberry Pi to move the backboard using a series of filtering and controls algorithms.  This project involved computer vision, path estimation, dynamics, motor control and use of a multi-thread operating system.  </p>
+                      <h5>Introduction</h5>
+                      <p class="text-justify">To accomplish this we first made a static basketball hoop, over this we mounted a movable backboard. The backboard is controlled by a Raspberry Pi (RPi). The RPi is connected to a camera which can sense where an incoming basketball is. When the camera senses an incoming basketball, the RPi reacts causing the backboard to orient itself such that the ball bounces off of it into the hoop. </p>
+                      <p class="text-justify">The backboard would be able to rotate about two different axises. We actuated these with either motors.As the camera would need to pick up several frames of the ball moving, calculations were be done to predict ball trajectory and calculate the correct inputs to the backboard.   This project was heavily inspired by <a href="https://www.youtube.com/watch?v=FycDx69px8U&ab_channel=StuffMadeHere">Stuff Made Here’s Automatic Hoop</a>; however, we will explore if we can make a $100 version of this channel’s several thousand dollar project.</p>
+                      <h5>References</h5>
+                      <p class="text-justify"><a href="https://www.pyimagesearch.com/2015/09/14/ball-tracking-with-opencv/">Ball Tracking with OpenCV</a></p>
+                      <p class="text-justify"><a href="https://pythonprogramming.net/haar-cascade-object-detection-python-opencv-tutorial/">Python Programming Tutorials</a></p>
+                      <p class="text-justify"><a href="https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi">How to Set Up OpenCV 4 on Raspberry Pi for Face Detection | Raspberry Pi</a></p>
+                      <p class="text-justify"><a href="https://maker.pro/raspberry-pi/tutorial/how-to-read-display-and-save-images-with-opencv-on-raspberry-pi">How to Set Up Image Processing With OpenCV on Raspberry Pi | Raspberry Pi</a></p>
+                      <p class="text-justify"><a href="https://towardsdatascience.com/face-detection-in-2-minutes-using-opencv-python-90f89d7c0f81">Face Detection in 2 Minutes using OpenCV & Python</a>                        
+                      <p class="text-justify"><a href="https://learn.adafruit.com/lsm6ds33-6-dof-imu=accelerometer-gyro">Overview | Adafruit LSM6DS33 6-DoF IMU Breakout | Adafruit</a></p></p>
+                      <p class="text-justify"><a href="https://learn.adafruit.com/adafruit-tb6612-h-bridge-dc-stepper-motor-driver-breakout">Adafruit TB6612 1.2A DC/Stepper Motor Driver Breakout Board</a></p>
+                      <p class="text-justify"><a href="https://www.scantips.com/lights/subjectdistance.html">Calculator to compute the Distance or Size of an Object in a photo Image</a></p>
+                      <p class="text-justify"><a href="https://www.youtube.com/watch?v=FycDx69px8U&t=231s&ab_channel=StuffMadeHere">Automatic hoop, unless you're my wife</a></p>
+                      <button class="btn btn-primary" data-dismiss="modal">
+                        <i class="fas fa-times fa-fw"></i>
+                        Close Window
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Portfolio Modal 1-->
         <div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-labelledby="portfolioModal1Label" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
@@ -241,6 +299,7 @@ z_m = (f_lens*r_ball*camera.resolution[1])/(r*h_sensor*1000) # (m)
 z0_m = (f_lens*r_ball*camera.resolution[1])/(r0*h_sensor*1000) # (m)
 v_z = (z0_m-z_m)/(t-t0) # (m/s)</p></code></pre>
                                     <p class="text-justify">Using the htop command, we found that the camera-based app tracking takes a significant amount of processing power, so we created a program, camera_transmitter.py that runs this code in the background, and exports the ball’s states into a .csv file.  Our main program then reads from this .csv file, so our control loop timing (besides state estimation error) is not affected by interruptions in camera_transmitter.py.</p>
+                                    <p class="text-justify">Christopher Chan contributed to this section of the project</p>
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -319,7 +378,8 @@ _________________________    __________    ______________    __________
                                     <p class="text-justify">We constructed the physical backboard after several iterations of 3-D printing and laser cutting.  When we built the physical backboard, we found that due to our tolerances and limited access to build facilities, there was some play in the linkages and UV-stabilizer joint.  Our ball-socket joints also had a limited range of motion, which decreased our controllability of the system.</p>
                                     <img class="img-fluid rounded mb-5" src="assets/img/design/full_build.png" alt="" />
                                     <p class="text-justify">Below is a video explaining our backboard build:</p>
-                                    <iframe class="embed-responsive video" height="315" src="https://www.youtube.com/embed/MhWu1Af6QqI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    <p class="text-justify">Please click <a href="https://youtu.be/MhWu1Af6QqI">here</a> for the non-embedded video tour of the backboard</p>
+                                    <p class="text-justify">Christopher Chan contributed to this section of the project</p>
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -357,7 +417,7 @@ _________________________    __________    ______________    __________
                                     <!-- Portfolio Modal - Text-->
 				    <p class="text-justify">Sigma Point Filter Depiction</p>
 				    <!-- Portfolio Modal - Image-->
-                                    <img class="img-fluid rounded mb-5" src="assets/img/portfolio/spf.jpg" alt="" />
+                                    <img class="img-fluid rounded mb-5" src="assets/img/filter/spf.jpg" alt="" />
                                     <p class="text-justify">A problem that can occur with real time application of Kalman Filters is the lack of robustness of the computation system. Covariances can grow to sizes where numerical errors can lead to disturbances in accuracy. To prevent this we used a square-root variant of the sigma point filter. Instead of working with covariance matrices, the square-root variant uses a cholesky decomposition to take the square root of our covariance matrix. This adds to computation and brings in the need of post processing to get covariance data but we thought that the higher level of robustness was necessary as our system would be greatly affected by errors in system state prediction. We also found that the square-root filter is highly dependent on the definiteness of the covariance matrices. If the covariance matrix goes negative definite, the filter will fail to predict future states. Due to this, it rendered the square root sigma-point filter to be unusable without highly accurate covariance matrices for noise and the prior.</p>
                                     <p class="text-justify">Below are our Extendended Kalman Filter and Square-Root Sigma Point Filter:</p>
                                     <pre><code><p class="text-left"># Harrison Hidalgo and Christopher Chan
@@ -464,7 +524,7 @@ def cholupdate(R,x,sign):
     c = r/R[k,None,k]
     s = x[k]/R[k,None,k]
     R[k,None,k] = r
-    if k<p:
+    if k&#60;p:
       R[(k+1):p,None,k] = (R[k+1:p,None,k] + sign*s*x[(k+1):p])/c
       x[(k+1):p]= c*x[(k+1):p] - s*R[(k+1):p,None,k]
   R = validateCovMatrix(R)
@@ -477,7 +537,7 @@ def validateCovMatrix(sig):
   if (is_pos_def(sigma) == False):
     w,v = np.linalg.eig(sigma)
     for n in range(0,len(w)):
-      if (v[n,n] <= ZERO):
+      if (v[n,n] &#60;= ZERO):
         v[n,n] = EPS
       sigma = w*v*np.transpose(w)
   return sigma
@@ -500,14 +560,13 @@ def measurement_validation(measurement,P,del_t,lam0,R,x_hat):
     # Find normalized innovation squared
     lam = np.matmul(np.matmul(np.transpose(innovation),np.linalg.inv(S)),innovation)
     # Accept or reject measurement
-    if lam < lam0:
+    if lam &#60; lam0:
         acceptance = True
     else:
         acceptance = False
     return acceptance
                                     </p></code></pre>
-                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
-                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
+                                    <p class="text-justify">Harrison Hidalgo contributed to this section of the project</p>
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -539,7 +598,6 @@ def measurement_validation(measurement,P,del_t,lam0,R,x_hat):
                                         <div class="divider-custom-line"></div>
                                     </div>
                                     <!-- Portfolio Modal - Image-->
-                                    <img class="img-fluid rounded mb-5" src="assets/img/lab4/robotparts.jpg" alt="" />
                                     <!-- Portfolio Modal - Text-->
                                     <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
                                     <h5></h5>
@@ -554,7 +612,7 @@ def covariances_small_enough(S,min_covariances):
 	#P = np.matmul(S,np.transpose(S))
 	is_it = True
 	for i in range(0,len(S)):
-		if min_covariances[i] < math.sqrt(S[i,i]):
+		if min_covariances[i] &#60; math.sqrt(S[i,i]):
 			is_it=False
 	return is_it
                                     </p></code></pre>
@@ -706,7 +764,7 @@ def find_angles(theta,phi,psi,r_B):
                 r_P2_MP2 = motor_point_2 - rP2;
                 r_P3_MP3 = motor_point_3 - rP3;
 
-                if (np.linalg.norm(r_P1_MP1-rP1)-GV.L1 < 0.1)and(np.linalg.norm(r_P2_MP2-rP2)-GV.L2 < 0.1)and(np.linalg.norm(r_P3_MP3-rP3)-GV.L3 < 0.1):
+                if (np.linalg.norm(r_P1_MP1-rP1)-GV.L1 &#60; 0.1)and(np.linalg.norm(r_P2_MP2-rP2)-GV.L2 &#60; 0.1)and(np.linalg.norm(r_P3_MP3-rP3)-GV.L3 &#60; 0.1):
                     does_it_work=True
                     theta_1 = th2_1
                     theta_2 = th2_2
@@ -725,15 +783,14 @@ def orientation_selector(th_1_current,th_2_current,th_3_current,possible_orienta
 		MSE_th1=(th_1_current-possible_orientations[0,i])^2
 		MSE_th2=(th_2_current-possible_orientations[1,i])^2
 		MSE_th3=(th_3_current-possible_orientations[2,i])^2
-		if (MSE_th1+MSE_th2+MSE_th3) < min_MSE:
+		if (MSE_th1+MSE_th2+MSE_th3) &#60; min_MSE:
 			theta1=possible_orientations[0,i]
 			theta2=possible_orientations[1,i]
 			theta3=possible_orientations[2,i]
 			min_MSE=MSE_th1+MSE_th2+MSE_th3
 	return theta1,theta2,theta3
                                     </p></code></pre>
-                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
-                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
+                                    <p class="text-justify">Harrison Hidalgo contributed to this section of the project</p>
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
@@ -771,10 +828,11 @@ def orientation_selector(th_1_current,th_2_current,th_3_current,possible_orienta
                                     <p class="text-justify">Our main loop begins, and we collect our measurements by reading from the data outputted into our csv files.  We use a couple of functions to process these measurements according to the state of the system.  The system has 4 possible states: resetting the system according to the limit switches, collecting measurements, calculating desired movements of the backboard, moving the motors, and waiting until the basketball hits the backboard.  We interface between the piTFT through interface_creater, which keeps track of the control actions in a .csv file and checks if a stop button is pressed, which would break our main_program loop variable.</p>
                                     <p class="text-justify">A diagram explaining our main control loop is shown below:</p>
                                     <img class="img-fluid rounded mb-5" src="assets/img/results/main_overview.png" alt="" />
-                                    <iframe class="embed-responsive video" height="315" src="https://www.youtube.com/embed/PM1zuuhhf3s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    <p class="text-justify">Please click <a href="https://youtu.be/PM1zuuhhf3s">here</a> for the non-embedded video explanation of our control software</p>
                                     <p class="text-justify">Unfortunately, due to state estimation errors from our inaccurate camera mapping function, we were not able to get accurate enough ball velocity measurements for our system iterator function to reliably predict the optimal backboard angle.  In many cases, there was no result, as the optimal state was not reachable.  In order to combat this solution, we implemented a simpler function, called simple_main_program.py.  This “Better Shot Backboard” system simply checks if the ball is veering left or right of center.  If the ball is left of center, the backboard angles counter-clockwise; if the ball is right of center, the backboard angles clockwise.</p>
-                                    <p class="text-justify">Our Better Shot Backboard was able to successfully track and adjust to different ball trajectories.  We would like to use more optimal control systems, but we believe we need more robust and expensive hardware to do so.  Some improvements we would make are metal-machined linkages with less play, and a UV-joint that uses roller bearings.  We would also add a more robust mounting plate and backboard.  Improving our camera with the inclusion of an RGB-D camera or by mounting the camera in a different orientation (orthogonal to the backboard) would help capture the crucial depth measurement with more accuracy. </p>
-                                    <iframe class="embed-responsive video" height="315" src="https://www.youtube.com/embed/HUtkOMPV6so" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    <p class="text-justify">Our Better Shot Backboard was able to successfully track and adjust to different ball trajectories.  We would like to use more optimal control systems, but we believe we need more robust and expensive hardware to do so.  Some improvements we would make are metal-machined linkages with less play, and a UV-joint that uses roller bearings.  We would also add a more robust mounting plate and backboard.  Improving our camera with the inclusion of an RGB-D camera or by mounting the camera in a different orientation (orthogonal to the backboard) would help capture the crucial depth measurement with more accuracy. We believe we can implement our more advanced filters and control algorithms if we made these improvements, which would afford us optimal control of the backboard angle</p>
+                                    <p class="text-justify">Please click <a href="https://youtu.be/HUtkOMPV6so">here</a> for the non-embedded video of shooting with the "Better Shot Backboard"</p>
+                                    <p class="text-justify">A link to our full code repository can be found <a href="https://github.com/cec272/perfect_shot_backboard/tree/master/code">here.</a></p>
                                     <p class="text-justify">Our full simple_main_program.py code is shown below:</p>
                                     <pre><code><p class="text-left">
 # Harrison Hidalgo and Chris Chan
@@ -1053,15 +1111,7 @@ while (current_time-start_time) &#60; run_time and run:
     run = row[0]
 GPIO.cleanup()
                                     </p></code></pre>
-                                    <p class="text-justify"></p>
-                                    <p class="text-justify"></p>
-                                    <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
-                                    <h5></h5>
-                                    <p class="text-justify"></p>
-                                    <pre><code><p class="text-left">
-                                    </p></code></pre>
-                                    <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
-                                    <!-- DELETE THESE WHEN YOU ARE DONE!-->
+                                  <p class="text-justify">Christopher Chan and Harrison Hidalgo contributed to this section of the project</p>
                                     <button class="btn btn-primary" data-dismiss="modal">
                                         <i class="fas fa-times fa-fw"></i>
                                         Close Window
