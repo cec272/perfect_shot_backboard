@@ -128,7 +128,7 @@
                 </div>
                 <!-- About Section Content-->
                 <div class="row">
-                    <div class="col-lg-4 ml-auto"><p class="lead">Harrison's bio goes here</p></div>
+                    <div class="col-lg-4 ml-auto"><p class="lead">Harrison is a Master of Engineering student in Mechanical Engineering at Cornell University. He is interested in dynamics, controls, and robotics. He enjoys bringing these different elements together to create fun interesting projects.</p></div>
                     <div class="col-lg-4 mr-auto"><p class="lead">Chris is a Master of Engineering student in Mechanical Engineering at Cornell University.  He enjoys all aspects of engineering, from design to prototyping and manufacturing.  Chris enjoy hands-on experience and creating projects that can potentially make a difference (plus they're cool!). He is passionate in crossroads of aerospace, robotics, and autonomous vehicles. </p></div>
                 </div>
             </div>
@@ -159,7 +159,7 @@
         </footer>
         <!-- Copyright Section-->
         <div class="copyright py-4 text-center text-white">
-            <div class="container"><small>Copyright © Christopher Chan, Harrison Hildalgo 2020</small></div>
+            <div class="container"><small>Copyright © Christopher Chan, Harrison Hidalgo 2020</small></div>
             <div class="container"><small> Freelance is a free to use, MIT licensed Bootstrap theme created by
             <a href="http://startbootstrap.com">Start Bootstrap</a>.</small></div>
         </div>
@@ -355,7 +355,7 @@ _________________________    __________    ______________    __________
                                     <h5></h5>
                                     <p class="text-justify">To process our data, we created two different filters. We started by creating an Extended Kalman Filter, or an EKF. An EKF is an algorithm that acts very similar to a traditional Kalman Filter. Where they differ is in the types of models they can analyze. A standard Kalman Filter uses linear models, an EKF extends the Kalman Filter to be able to analyze non-linear models. It does this by utilizing a linearization of the non-linear dynamics at the previous estimate of the system. This EKF was simple and quick to put together for preliminary testing. For our final design we strove to design and implement a square-root, sigma point filter, also known as a square-root unscented filter. A sigma point filter, like the EKF, can be used to analyze non-linear data. This is done by fitting gaussian probabilities to non-linear data. First, several points are generated, these points are called sigma points. These points are distributed based on the predicted covariances of the data. Using this system, we assume gaussian process and sensor noise. These points are then fed into the non-linear dynamics of the system. These dynamics scramble the probability distribution. To cope with this, we then fit a new gaussian to the system based on the locations of the sigma points, to compute this we use a system of weights on each sigma-point. We can then use this new probability distribution to process our data with a Kalman Filter. Some advantages of the sigma-point filter are a higher level of accuracy compared to the EKF and computation of the system jacobian is unnecessary. Disadvantages of the sigma-point filter are a higher level of computation and the use of unintuitive design variables. To simplify the use of design variables, we used a weight system that reduced the number of design variables from three to one. </p>
                                     <!-- Portfolio Modal - Image-->
-                                    <img class="img-fluid rounded mb-5" src="assets/img/spf.jpg" alt="" />
+                                    <img class="img-fluid rounded mb-5" src="assets/img/portfolio/spf.jpg" alt="" />
                                     <!-- Portfolio Modal - Text-->
 				    <p class="text-justify">Sigma Point Filter</p>
                                     <p class="text-justify">A problem that can occur with real time application of Kalman Filters is the lack of robustness of the computation system. Covariances can grow to sizes where numerical errors can lead to disturbances in accuracy. To prevent this we used a square-root variant of the sigma point filter. Instead of working with covariance matrices, the square-root variant uses a cholesky decomposition to take the square root of our covariance matrix. This adds to computation and brings in the need of post processing to get covariance data but we thought that the higher level of robustness was necessary as our system would be greatly affected by errors in system state prediction. We also found that the square-root filter is highly dependent on the definiteness of the covariance matrices. If the covariance matrix goes negative definite, the filter will fail to predict future states. Due to this, it rendered the square root sigma-point filter to be unusable without highly accurate covariance matrices for noise and the prior.</p>
