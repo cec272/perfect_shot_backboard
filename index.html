@@ -353,6 +353,11 @@ _________________________    __________    ______________    __________
                                     <!-- Portfolio Modal - Image-->
                                     <img class="img-fluid rounded mb-5" src="assets/img/lab3/botandremote.jpg" alt="" />
                                     <!-- Portfolio Modal - Text-->
+				    <p class="text-justify">Sigma Point Filter</p>
+				    <!-- Portfolio Modal - Image-->
+                                    <img class="img-fluid rounded mb-5" src="assets/img/lab3/botandremote.jpg" alt="" />
+                                    <!-- Portfolio Modal - Text-->
+				    <p class="text-justify"></p>
                                     <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
                                     <h5></h5>
                                     <p class="text-justify">To process our data, we created two different filters. We started by creating an Extended Kalman Filter, or an EKF. An EKF is an algorithm that acts very similar to a traditional Kalman Filter. Where they differ is in the types of models they can analyze. A standard Kalman Filter uses linear models, an EKF extends the Kalman Filter to be able to analyze non-linear models. It does this by utilizing a linearization of the non-linear dynamics at the previous estimate of the system. This EKF was simple and quick to put together for preliminary testing. For our final design we strove to design and implement a square-root, sigma point filter, also known as a square-root unscented filter. A sigma point filter, like the EKF, can be used to analyze non-linear data. This is done by fitting gaussian probabilities to non-linear data. First, several points are generated, these points are called sigma points. These points are distributed based on the predicted covariances of the data. Using this system, we assume gaussian process and sensor noise. These points are then fed into the non-linear dynamics of the system. These dynamics scramble the probability distribution. To cope with this, we then fit a new gaussian to the system based on the locations of the sigma points, to compute this we use a system of weights on each sigma-point. We can then use this new probability distribution to process our data with a Kalman Filter. Some advantages of the sigma-point filter are a higher level of accuracy compared to the EKF and computation of the system jacobian is unnecessary. Disadvantages of the sigma-point filter are a higher level of computation and the use of unintuitive design variables. To simplify the use of design variables, we used a weight system that reduced the number of design variables from three to one. </p>
@@ -543,8 +548,194 @@ def measurement_validation(measurement,P,del_t,lam0,R,x_hat):
                                     <!-- Portfolio Modal - Text-->
                                     <!-- HERE ARE SOME OF THE FORMAT STRINGS YOU MIGHT USE-->
                                     <h5></h5>
-                                    <p class="text-justify"></p>
-                                    <pre><code><p class="text-left">
+                                    <p class="text-justify">Once our system had converged to small enough covariances we could begin actuation of our backboard. To do this our system had to run through several programs designed to locate the optimal orientation of the board. We broke this up into several steps: mapping the ball’s position from camera coordinates to backboard coordinates, calculating possible backboard orientations that would result in a basket, then mapping these different orientations to different motor configurations, at this point we would find the best motor orientation by using mean-square error from the current configuration. We could then feed this orientation into our control loop where the motors would begin actuation. </p>
+                                    <pre><code><p class="text-left"># Harrison Hidalgo
+# ECE 5725
+# This script returns True if covariances are small enough.
+
+def covariances_small_enough(S,min_covariances):
+	import numpy as np
+	import math
+	#P = np.matmul(S,np.transpose(S))
+	is_it = True
+	for i in range(0,len(S)):
+		if min_covariances[i] < math.sqrt(S[i,i]):
+			is_it=False
+	return is_it
+                                    </p></code></pre>
+				    <p class="text-justify">Mapping the ball coordinates to baseboard coordinates involved a transformation matrix from the camera coordinates to the baseboard coordinates. We then needed to shift the ball’s location from relative distance  from the camera to relative distance from the baseboard. At this point our system was ready to find the appropriate backboard orientation.</p>
+                                    <pre><code><p class="text-left"># Harrison Hidalgo and Christopher Chan
+# ECE 5725 - Final Project
+# This module contains all of our transforms.
+
+def transform_baseboard_to_backboard(theta,phi,psi,x):
+	#
+	# Parameters:
+	# 	theta: rotation about baseboard z axis
+	# 	phi: rotation about baseboard y axis
+	# 	psi: rotation about baseboard x axis
+	# 	x: vector to transform
+	# Output: 
+	# 	x_new: transformed vector
+	import numpy as np
+	import math
+	R = np.matmul(np.matmul([[math.cos(theta),-math.sin(theta),0],[math.sin(theta),math.cos(theta),0],[0,0,1]],[[math.cos(phi),0,math.sin(phi)],[0,1,0],[-math.sin(phi),0,math.cos(phi)]]),[[1,0,0],[0,math.cos(psi),-math.sin(psi)],[0,math.sin(psi),math.cos(psi)]])
+	x_new = np.matmul(R,x)
+	return x_new
+
+def transform_backboard_to_baseboard(theta,phi,psi,x):
+	#
+	# Parameters:
+	# 	theta: rotation about baseboard z axis
+	# 	phi: rotation about baseboard y axis
+	# 	psi: rotation about baseboard x axis
+	# 	x: vector to transform
+	# Output: 
+	# 	x_new: transformed vector
+	import numpy as np
+	import math
+	R = np.matmul(np.matmul([[math.cos(theta),-math.sin(theta),0],[math.sin(theta),math.cos(theta),0],[0,0,1]],[[math.cos(phi),0,math.sin(phi)],[0,1,0],[-math.sin(phi),0,math.cos(phi)]]),[[1,0,0],[0,math.cos(psi),-math.sin(psi)],[0,math.sin(psi),math.cos(psi)]])
+	R = np.linalg.inv(R)
+	x_new = np.matmul(R,x)
+	return x_new
+
+def transform_camera_to_baseboard(position_camera):
+	#
+	# Parameters:
+	# position_camera: location in camera coordinates
+	new_position = [position_camera[0],-position_camera[1],-position_camera[2]]
+	return new_position
+                                    </p></code></pre>
+				    <p class="text-justify">To calculate the optimal backboard orientation, we first simulated the ball flying towards the board in the initial position, from there we could see if the ball would be able to make contact with the backboard. We take this point of contact and then find the necessary direction the ball needs to go in order to make a basket. This is calculated by finding the unit vector between the point of contact and the center of the hoop. We then iterate through the workspace of the backboard to find orientations that could cause a post-collision velocity within a reasonable margin of error to score a basket. We take a linear approximation of ball flight post-collision due to the shortness of path between the backboard and hoop.
+</p>
+                                    <pre><code><p class="text-left"># Harrison Hidalgo
+# ECE 5725 - Final Project
+#
+
+import iteration_variables as I_V
+import numpy as np
+import transformations
+from path_tracker import *
+import Geometric_Variables as GV
+
+def system_iterator(e_b,r_B0,r_GB0,h,x_ball_init,front,up,W_of_backboard,H_of_backboard,T_of_backboard,r_of_ball,center_hoop):
+	# Cycle through different theta, psi, phi, and B positions
+	number_of_divisions = 20
+	# Create vectors to iterate through
+	#theta_iter = np.linspace(I_V.theta_min,I_V.theta_max,number_of_divisions)
+	phi_iter   = np.linspace(I_V.phi_min,I_V.phi_max,number_of_divisions)
+	psi_iter   = np.linspace(I_V.psi_min,I_V.psi_max,number_of_divisions)
+	B_iter     = np.linspace(I_V.B_min,I_V.B_max,number_of_divisions)
+	does_it_work=False
+	hits,location,velocity_at_location = path_tracker(h,x_ball_init,GV.front,GV.up,GV.W_of_backboard,GV.H_of_backboard,GV.T_of_backboard,0.06542,GV.center_hoop,GV.r_B0)
+	if hits:
+		print('this may work')
+		need_vel_direction = (center_hoop-location)/np.linalg.norm(center_hoop-location)
+	else:
+		does_it_work = False
+		working_orientations = 0
+		return does_it_work,working_orientations
+	theta = 0
+	# For storing results
+	working_orientations = []
+	for j in range(0,number_of_divisions):# phi
+		for k in range(0,number_of_divisions):# psi
+			for l in range(0,number_of_divisions):
+				phi   = phi_iter[j]
+				psi   = psi_iter[k]
+				new_up = transformations.transform_baseboard_to_backboard(theta,phi,psi,up)
+				new_front = transformations.transform_baseboard_to_backboard(theta,phi,psi,front)
+				need_vel_direction = (center_hoop-location+B_iter[l]*e_b)/np.linalg.norm(center_hoop-location+B_iter[l]*e_b)
+				velocity_after = collision(new_up,new_front,velocity_at_location,1)
+				if np.dot(velocity_after,need_vel_direction) > 0.95*np.linalg.norm(need_vel_direction)+np.linalg.norm(velocity_after):
+					working_orientations = np.array([[theta_iter[i]],[phi_iter[j]],[psi_iter[k]]])
+					does_it_work=True
+					break
+	#working_orientations=np.reshape(working_orientations,(4,len(working_orientations)/4))
+	return does_it_work,working_orientations
+
+def collision(up,front,velocity,restitution):
+    import numpy as np
+    # Calculate the left component of the backboard.
+    left = np.cross(front,up);
+    # Decompose velocity into backboard coordinates.
+    up_comp = np.dot(velocity,up)/np.dot(up,up)*up;
+    front_comp = np.dot(velocity,front)/np.dot(front,front)*front;
+    left_comp = np.dot(velocity,left)/np.dot(left,left)*left;
+    # Put velocity back together.
+    velocity_new = up_comp-front_comp*restitution+left_comp;
+    return velocity_new
+                                    </p></code></pre>
+				    <p class="text-justify">We take the set of possible backboard orientations and pipe them into a script that computes  the different motor orientations needed for each backboard orientation. Our algorithm is an iterative process that samples from our workspace and computes whether or not our physical constraints are upheld. If so, we deem the motor-backboard orientation combination as a possible one and add it to our set of possible orientations.</p>
+                                    <pre><code><p class="text-left"># Harrison Hidalgo
+# ECE 5725 - Final Project
+# This program parses through possible combos of theta1 theta2 and theta3
+# to find necessary combo.
+
+def find_angles(theta,phi,psi,r_B):
+    import numpy as np
+    import transformations
+    import math
+    import iteration_variables as IV
+    import Geometric_Variables as GV
+    
+    theta_1 = np.array([])
+    theta_2 = np.array([])
+    theta_3 = np.array([])
+    
+    N=5;
+    th1=np.linspace(IV.th1_start,IV.th1_end,N);
+    th2=np.linspace(IV.th2_start,IV.th2_end,N);
+    th3=np.linspace(IV.th3_start,IV.th3_end,N);
+    rP1= r_B-transformations.transform_baseboard_to_backboard(theta,phi,psi,(GV.rGB0+GV.rGP10))
+    rP2= r_B-transformations.transform_baseboard_to_backboard(theta,phi,psi,(GV.rGB0+GV.rGP20))
+    rP3= r_B-transformations.transform_baseboard_to_backboard(theta,phi,psi,(GV.rGB0+GV.rGP30))
+    does_it_work=False
+    for i in range(0,N):
+        for j in range(0,N):
+            for k in range(0,N):
+                th2_1=th1[i]
+                th2_2=th2[j]
+                th2_3=th3[k]
+                # Rotation about an arbitrary axis
+                motor_rod1 = np.dot(GV.motor_rod10,GV.motor_up1)*GV.motor_up1+math.cos(th2_1)*GV.motor_rod10+math.sin(th2_1)*np.cross(GV.motor_up1,GV.motor_rod10);
+                motor_rod2 = np.dot(GV.motor_rod20,GV.motor_up2)*GV.motor_up2+math.cos(th2_2)*GV.motor_rod20+math.sin(th2_2)*np.cross(GV.motor_up2,GV.motor_rod20);
+                motor_rod3 = np.dot(GV.motor_rod30,GV.motor_up3)*GV.motor_up3+math.cos(th2_3)*GV.motor_rod30+math.sin(th2_3)*np.cross(GV.motor_up3,GV.motor_rod30);
+
+                # Motor points
+                motor_point_1 = GV.gear2_1+motor_rod1
+                motor_point_2 = GV.gear2_2+motor_rod2
+                motor_point_3 = GV.gear2_3+motor_rod3
+                # Rods
+                r_P1_MP1 = motor_point_1 - rP1;
+                r_P2_MP2 = motor_point_2 - rP2;
+                r_P3_MP3 = motor_point_3 - rP3;
+
+                if (np.linalg.norm(r_P1_MP1-rP1)-GV.L1 < 0.1)and(np.linalg.norm(r_P2_MP2-rP2)-GV.L2 < 0.1)and(np.linalg.norm(r_P3_MP3-rP3)-GV.L3 < 0.1):
+                    does_it_work=True
+                    theta_1 = th2_1
+                    theta_2 = th2_2
+                    theta_3 = th2_3
+                    break
+    return does_it_work,theta_1,theta_2,theta_3
+                                    </p></code></pre>
+				    <p class="text-justify">Finally, we pipe the set of different motor orientations into a program that selects the optimal position to move to. This program uses mean-squared error, where our reference is the system’s current position. The orientation selected possesses the least error. </p>
+                                    <pre><code><p class="text-left"># Harrison Hidalgo
+# ECE 5725 - Final Project
+# Selects orientation to move to using mean-square error.
+
+def orientation_selector(th_1_current,th_2_current,th_3_current,possible_orientations):
+	min_MSE = float('inf')
+	for i in range(0,len(possible_orientations[1,:])):
+		MSE_th1=(th_1_current-possible_orientations[0,i])^2
+		MSE_th2=(th_2_current-possible_orientations[1,i])^2
+		MSE_th3=(th_3_current-possible_orientations[2,i])^2
+		if (MSE_th1+MSE_th2+MSE_th3) < min_MSE:
+			theta1=possible_orientations[0,i]
+			theta2=possible_orientations[1,i]
+			theta3=possible_orientations[2,i]
+			min_MSE=MSE_th1+MSE_th2+MSE_th3
+	return theta1,theta2,theta3
                                     </p></code></pre>
                                     <img class="img-fluid rounded mb-5" src="assets/img/" alt="" />
                                     <!-- DELETE THESE WHEN YOU ARE DONE!-->
